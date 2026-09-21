@@ -1,5 +1,6 @@
 import { AmbientBackground, GlassPanel } from "@/components/glass"
 import { HomeDashboard } from "@/components/home-dashboard"
+import { InstallTip } from "@/components/install-tip"
 import { LearnSession } from "@/components/learn-session"
 import { ReviewSession } from "@/components/review-session"
 import { Button } from "@/components/ui/button"
@@ -12,6 +13,9 @@ export function App() {
     <div className="relative min-h-svh text-slate-800">
       <AmbientBackground />
       <main className="mx-auto w-full max-w-2xl px-4 py-6 sm:px-6 sm:py-10">
+        {engine.status === "ready" && engine.view === "home" ? (
+          <InstallTip />
+        ) : null}
         {engine.status === "loading" ? <LoadingState /> : null}
         {engine.status === "error" ? (
           <ErrorState message={engine.error ?? "词库加载失败"} />

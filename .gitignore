@@ -25,3 +25,6 @@ dist-ssr
 
 # Source PDF (not redistributed)
 uploads/
+
+# PWA / Vite
+dev-dist/

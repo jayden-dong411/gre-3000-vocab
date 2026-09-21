@@ -9,12 +9,18 @@ npm install
 npm run dev
 ```
 
-开发服务器默认 `http://127.0.0.1:43173`。生产构建：
+开发服务器默认 `http://127.0.0.1:43173`。
+
+生产构建（含 Service Worker / 可安装 PWA）：
 
 ```bash
 npm run build
 npm run preview
 ```
+
+预览同样是 `http://127.0.0.1:43173`。完整离线与「添加到主屏幕」请用 **build + preview**（或部署到 HTTPS 静态托管）验证；`npm run dev` 也会注册开发用 SW，但安装体验以生产构建为准。
+
+任意静态主机均可部署 `dist/`（Nginx、GitHub Pages、Cloudflare Pages、Vercel 静态、Netlify、`npx serve dist` 等）。安装 PWA 需要 **HTTPS**（`localhost` 例外）。
 
 ## 词库从哪来
 
@@ -66,3 +72,30 @@ python3 scripts/parse_gre_pdf.py /path/to/gre3000.pdf public/data/words.json
 
 - 新词：空格翻转卡片，`1` 不认识，`2` 认识
 - 复习：`1`–`4` 选答案，反馈后空格/回车下一题
+
+## 添加到手机主屏幕（PWA）
+
+本应用是可安装的 Web App：`vite-plugin-pwa`（Workbox）会生成 Web App Manifest 与 Service Worker。首次打开后会缓存应用壳和 `/data/words.json`，之后断网也能背新词、做复习（进度仍在本机 `localStorage`）。
+
+### iPhone / iPad（Safari）
+
+1. 用 **Safari** 打开站点（必须是 `https://…` 或本机 `http://localhost` / `http://127.0.0.1`）。
+2. 点底部分享按钮（方框加向上箭头）。
+3. 滑到「添加到主屏幕」→ 添加。
+4. 主屏幕会出现「GRE 3000」，以独立窗口打开。
+
+Chrome iOS 不能完整安装 PWA，请用系统 Safari。
+
+### Android（Chrome）
+
+1. 用 **Chrome** 打开站点（HTTPS 或 localhost）。
+2. 菜单 ⋮ →「添加到主屏幕」/「安装应用」，或等待浏览器自己的安装横幅。
+3. 确认后主屏幕会出现「GRE 3000」。
+
+手机浏览器里首次访问首页会看到可关闭的提示：「分享 → 添加到主屏幕」。关掉后记在 `localStorage` 键 `gre3000.pwa-tip.v1`。
+
+### 如何确认装上了 / 能离线
+
+- Chrome DevTools → **Application**：Manifest 名称应为「GRE 3000 背词」，能看到 192 / 512 图标；Service Workers 为 activated；Cache Storage 里有预缓存和 `gre-word-bank`（含 `words.json`）。
+- Lighthouse → PWA：installable、离线回退应通过（需 `npm run build && npm run preview` 或 HTTPS 部署，不要用裸 `index.html`）。
+- 验证离线：打开一次应用后，DevTools Network 勾选 Offline，刷新仍能进入首页并加载词库。

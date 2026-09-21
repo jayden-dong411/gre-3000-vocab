@@ -68,7 +68,7 @@ export function useVocabEngine() {
   }, [words])
 
   const dueIds = useMemo(
-    () => dueCardIds(state.cards, Date.now()),
+    () => dueCardIds(state.cards, now),
     [state.cards, now],
   )
 
