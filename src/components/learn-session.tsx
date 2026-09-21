@@ -54,7 +54,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         <GlassPanel className="px-6 py-12 text-center">
           <p className="font-serif text-2xl text-slate-900">今日新词已完成</p>
           <p className="mt-2 text-sm text-slate-500">
-            不认识的词会在几分钟后进入复习队列。
+            不认识的词已经进入复习队列，可以马上做英译中。
           </p>
           <div className="mt-6 flex justify-center gap-3">
             <Button

@@ -91,7 +91,7 @@ export function useVocabEngine() {
       const stage = stageAfterLearn(known)
       const card: WordCard = {
         stage,
-        nextReviewAt: scheduleAt(stage, DEFAULT_EASE, t),
+        nextReviewAt: known ? scheduleAt(stage, DEFAULT_EASE, t) : t,
         ease: DEFAULT_EASE,
         wrongCount: 0,
         correctCount: 0,
