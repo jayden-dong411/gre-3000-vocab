@@ -34,6 +34,7 @@ export function useVocabEngine() {
   const persist = useCallback((next: AppState) => {
     saveState(next)
     setState(next)
+    setNow(Date.now())
   }, [])
 
   useEffect(() => {
@@ -67,7 +68,7 @@ export function useVocabEngine() {
   }, [words])
 
   const dueIds = useMemo(
-    () => dueCardIds(state.cards, now),
+    () => dueCardIds(state.cards, Date.now()),
     [state.cards, now],
   )
 
@@ -91,7 +92,7 @@ export function useVocabEngine() {
       const stage = stageAfterLearn(known)
       const card: WordCard = {
         stage,
-        nextReviewAt: known ? scheduleAt(stage, DEFAULT_EASE, t) : t,
+        nextReviewAt: known ? scheduleAt(stage, DEFAULT_EASE, t) : 0,
         ease: DEFAULT_EASE,
         wrongCount: 0,
         correctCount: 0,
