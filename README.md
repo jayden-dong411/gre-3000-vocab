@@ -7,6 +7,8 @@
 ## 本地运行
 
 ```bash
+git clone https://github.com/jayden-dong411/gre-3000-vocab.git
+cd gre-3000-vocab
 npm install
 npm run dev
 ```
