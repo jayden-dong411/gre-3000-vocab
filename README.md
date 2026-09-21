@@ -1,6 +1,8 @@
 # GRE 镇考 3000
 
-纯前端的 GRE 词汇学习页：每日新词（默认 100）+ 艾宾浩斯间隔复习。词库随应用打包，加载后可离线使用；学习进度写在 `localStorage`，无需后端。
+纯前端 GRE 词汇学习 PWA：每日新词（默认 100）+ 艾宾浩斯间隔复习。词库随应用打包，首次打开后可离线背词；进度写在浏览器 `localStorage`，无需后端。
+
+**线上地址（生产 HTTPS）：** https://gre-3000-vocab.vercel.app
 
 ## 本地运行
 
@@ -18,13 +20,13 @@ npm run build
 npm run preview
 ```
 
-预览同样是 `http://127.0.0.1:43173`。完整离线与「添加到主屏幕」请用 **build + preview**（或部署到 HTTPS 静态托管）验证；`npm run dev` 也会注册开发用 SW，但安装体验以生产构建为准。
+预览同样是 `http://127.0.0.1:43173`。完整离线与「添加到主屏幕」请用 **build + preview** 或线上 HTTPS 验证；`npm run dev` 也会注册开发用 SW，但安装体验以生产构建为准。
 
-任意静态主机均可部署 `dist/`（Nginx、GitHub Pages、Cloudflare Pages、Vercel 静态、Netlify、`npx serve dist` 等）。安装 PWA 需要 **HTTPS**（`localhost` 例外）。
+把 `dist/` 部署到任意静态主机即可（本仓库已部署到 [Vercel](https://gre-3000-vocab.vercel.app)）。安装到手机主屏幕需要 **HTTPS**（`localhost` 例外）。
 
 ## 词库从哪来
 
-源文件是《GRE 镇考 3000 词（乱序版）》PDF（WPS 表格导出，约 199 页词表）。仓库只保留解析结果 `public/data/words.json`，不包含原 PDF。
+源文件是《GRE 镇考 3000 词（乱序版）》PDF（WPS 表格导出，约 199 页词表）。仓库只保留解析结果 `public/data/words.json`，**不包含原 PDF**。
 
 解析脚本：`scripts/parse_gre_pdf.py`（依赖 `pymupdf`）。做法：
 
@@ -77,9 +79,11 @@ python3 scripts/parse_gre_pdf.py /path/to/gre3000.pdf public/data/words.json
 
 本应用是可安装的 Web App：`vite-plugin-pwa`（Workbox）会生成 Web App Manifest 与 Service Worker。首次打开后会缓存应用壳和 `/data/words.json`，之后断网也能背新词、做复习（进度仍在本机 `localStorage`）。
 
+**最快：** 手机打开 https://gre-3000-vocab.vercel.app 再按下面步骤添加。
+
 ### iPhone / iPad（Safari）
 
-1. 用 **Safari** 打开站点（必须是 `https://…` 或本机 `http://localhost` / `http://127.0.0.1`）。
+1. 用 **Safari** 打开 https://gre-3000-vocab.vercel.app （或本机 `http://127.0.0.1:43173`）。
 2. 点底部分享按钮（方框加向上箭头）。
 3. 滑到「添加到主屏幕」→ 添加。
 4. 主屏幕会出现「GRE 3000」，以独立窗口打开。
@@ -88,7 +92,7 @@ Chrome iOS 不能完整安装 PWA，请用系统 Safari。
 
 ### Android（Chrome）
 
-1. 用 **Chrome** 打开站点（HTTPS 或 localhost）。
+1. 用 **Chrome** 打开 https://gre-3000-vocab.vercel.app 。
 2. 菜单 ⋮ →「添加到主屏幕」/「安装应用」，或等待浏览器自己的安装横幅。
 3. 确认后主屏幕会出现「GRE 3000」。
 
@@ -97,5 +101,5 @@ Chrome iOS 不能完整安装 PWA，请用系统 Safari。
 ### 如何确认装上了 / 能离线
 
 - Chrome DevTools → **Application**：Manifest 名称应为「GRE 3000 背词」，能看到 192 / 512 图标；Service Workers 为 activated；Cache Storage 里有预缓存和 `gre-word-bank`（含 `words.json`）。
-- Lighthouse → PWA：installable、离线回退应通过（需 `npm run build && npm run preview` 或 HTTPS 部署，不要用裸 `index.html`）。
+- Lighthouse → PWA：installable、离线回退应通过（需 `npm run build && npm run preview` 或 HTTPS 部署）。
 - 验证离线：打开一次应用后，DevTools Network 勾选 Offline，刷新仍能进入首页并加载词库。
