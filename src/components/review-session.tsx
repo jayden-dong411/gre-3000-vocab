@@ -64,13 +64,13 @@ export function ReviewSession({ engine }: { engine: VocabEngine }) {
 
   if (total === 0 || index >= total) {
     return (
-      <div className="lg:flex lg:h-[calc(100svh-2.5rem)] lg:min-h-0 lg:flex-col">
+      <div>
         <SessionHeader
           title="间隔复习"
           progress={{ current: total, total: total }}
           onBack={() => setView("home")}
         />
-        <GlassPanel className="px-6 py-12 text-center lg:flex lg:flex-1 lg:flex-col lg:items-center lg:justify-center">
+        <GlassPanel className="px-6 py-12 text-center">
           <p className="font-serif text-2xl text-slate-900">
             {total === 0 ? "暂时没有到期复习" : "本轮复习完成"}
           </p>
@@ -113,7 +113,7 @@ export function ReviewSession({ engine }: { engine: VocabEngine }) {
   const nextLabel = card ? SRS_LABELS[card.stage] : ""
 
   return (
-    <div className="lg:flex lg:h-[calc(100svh-2.5rem)] lg:min-h-0 lg:flex-col">
+    <div>
       <SessionHeader
         title="间隔复习"
         subtitle="英译中四选一 · 数字键 1–4 也可作答"
@@ -121,8 +121,8 @@ export function ReviewSession({ engine }: { engine: VocabEngine }) {
         onBack={() => setView("home")}
       />
 
-      <div className="lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:grid-rows-[minmax(0,1fr)_auto] lg:gap-4">
-        <GlassPanel className="flex flex-col items-center justify-center px-5 py-7 text-center sm:px-8 lg:min-h-0">
+      <div className="lg:grid lg:grid-cols-[minmax(14rem,0.72fr)_minmax(0,1.28fr)] lg:items-start lg:gap-4">
+        <GlassPanel className="flex flex-col items-center justify-center px-5 py-8 text-center sm:px-6">
           <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
             选择正确释义
           </p>
@@ -137,7 +137,7 @@ export function ReviewSession({ engine }: { engine: VocabEngine }) {
           </div>
         </GlassPanel>
 
-        <div className="mt-4 grid gap-2.5 lg:mt-0 lg:h-full lg:min-h-0 lg:grid-cols-2 lg:content-center">
+        <div className="mt-4 grid gap-2.5 lg:mt-0 lg:grid-cols-2">
           {choices.map((choice, i) => {
             const selected = picked === choice.id
             const show = phase === "feedback"
@@ -211,6 +211,27 @@ export function ReviewSession({ engine }: { engine: VocabEngine }) {
           </GlassPanel>
         ) : null}
       </div>
+      {queue.length - index > 1 ? (
+        <div className="mt-4 hidden lg:block">
+          <p className="mb-2 text-xs text-slate-500">
+            本轮后面还有 {queue.length - index - 1} 个
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {queue.slice(index + 1).map((id) => {
+              const word = wordMap.get(id)
+              if (!word) return null
+              return (
+                <span
+                  key={id}
+                  className="rounded-lg border border-white/80 bg-white/70 px-2 py-1 text-xs leading-none text-slate-700"
+                >
+                  {word.word}
+                </span>
+              )
+            })}
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

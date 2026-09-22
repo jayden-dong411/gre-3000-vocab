@@ -48,13 +48,13 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
 
   if (!current) {
     return (
-      <div className="lg:flex lg:h-[calc(100svh-2.5rem)] lg:min-h-0 lg:flex-col">
+      <div>
         <SessionHeader
           title="今日新词"
           progress={{ current: todayDone, total: todayTotal }}
           onBack={() => setView("home")}
         />
-        <GlassPanel className="px-6 py-12 text-center lg:flex lg:flex-1 lg:flex-col lg:items-center lg:justify-center">
+        <GlassPanel className="px-6 py-12 text-center">
           <p className="font-serif text-2xl text-slate-900">今日新词已完成</p>
           <p className="mt-2 text-sm text-slate-500">
             不认识的词可以马上复习；标成模糊的词大约 30 分钟后再出现。
@@ -80,7 +80,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
   }
 
   return (
-    <div className="lg:flex lg:h-[calc(100svh-2.5rem)] lg:min-h-0 lg:flex-col">
+    <div>
       <SessionHeader
         title="今日新词"
         subtitle="点卡片或空格翻转 · 1 不认识 · 2 模糊 · 3 认识"
@@ -161,9 +161,9 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         </div>
       </div>
 
-      <div className="hidden min-h-0 flex-1 grid-cols-2 gap-4 lg:grid">
+      <div className="hidden grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] items-stretch gap-3 lg:grid">
         <div
-          className="flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-white/80 bg-white/94 px-8 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
+          className="flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-white/80 bg-white/94 px-8 py-8 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
           onClick={() =>
             setFlipWordId((id) => (id === current.id ? null : current.id))
           }
@@ -222,11 +222,15 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
               ) : null}
             </div>
           ) : (
-            <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
-              <p className="font-serif text-2xl text-slate-800">释义在这边</p>
-              <p className="mt-2 text-sm text-slate-500">
-                按空格，或点击这块区域
+            <div className="flex h-full flex-col justify-center px-7">
+              <p className="font-serif text-xl text-slate-800">
+                空格或点击显示
               </p>
+              <ul className="mt-4 space-y-2 text-sm text-slate-500">
+                <li>中文释义</li>
+                <li>英文解释</li>
+                <li>例句</li>
+              </ul>
             </div>
           )}
         </div>
@@ -266,6 +270,23 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         <RotateCcw className="size-3" />
         {flipped ? "回到单词" : "翻转看释义"}
       </button>
+      {queue.length > 1 ? (
+        <div className="mt-5 hidden lg:block">
+          <p className="mb-2 text-xs text-slate-500">
+            今天后面还有 {queue.length - 1} 个
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {queue.slice(1).map((word) => (
+              <span
+                key={word.id}
+                className="rounded-lg border border-white/80 bg-white/70 px-2 py-1 text-xs leading-none text-slate-700"
+              >
+                {word.word}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

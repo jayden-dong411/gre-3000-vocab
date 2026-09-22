@@ -107,6 +107,27 @@ export function DesktopRail({ engine }: { engine: VocabEngine }) {
         </ul>
       </div>
 
+      <div className="mt-5 px-1">
+        <div className="mb-1.5 flex items-baseline justify-between text-xs text-slate-500">
+          <span>词库进度</span>
+          <span className="font-mono tabular-nums">
+            {state.introduced.length}/{words.length}
+          </span>
+        </div>
+        <div className="h-1.5 overflow-hidden rounded-full bg-white/80">
+          <div
+            className="h-full rounded-full bg-slate-900"
+            style={{
+              width: `${words.length === 0 ? 0 : (state.introduced.length / words.length) * 100}%`,
+            }}
+          />
+        </div>
+        <p className="mt-2 text-[11px] leading-relaxed text-slate-400">
+          今日还剩 {todayRemaining} 个新词
+          {dueIds.length > 0 ? `，${dueIds.length} 个待复习` : ""}
+        </p>
+      </div>
+
       <button
         type="button"
         className="mt-auto px-1 pt-4 text-left text-[11px] text-slate-400 underline-offset-4 hover:text-slate-600 hover:underline"
