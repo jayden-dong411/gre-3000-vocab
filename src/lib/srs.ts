@@ -31,16 +31,24 @@ export function clampStage(stage: number): number {
 export function scheduleAt(
   stage: number,
   ease: number,
-  now = Date.now(),
+  now = Date.now()
 ): number {
   const base = SRS_INTERVALS_MS[clampStage(stage)]
   const factor = Math.max(1.3, ease) / DEFAULT_EASE
   return now + Math.round(base * factor)
 }
 
-/** Self-rated “I know this” starts further along the curve. */
-export function stageAfterLearn(known: boolean): number {
-  return known ? 3 : 0
+/** Self-rating while learning a new word. */
+export type LearnRating = "unknown" | "fuzzy" | "known"
+
+/**
+ * Where a new word enters the curve:
+ * 不认识 → stage 0 (due immediately), 模糊 → stage 1 (~30 min), 认识 → stage 3 (~1 day).
+ */
+export function stageAfterLearn(rating: LearnRating): number {
+  if (rating === "known") return 3
+  if (rating === "fuzzy") return 1
+  return 0
 }
 
 /** Correct multiple-choice: advance one stage. */

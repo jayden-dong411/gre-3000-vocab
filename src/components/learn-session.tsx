@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react"
-import { Check, RotateCcw, X } from "lucide-react"
+import { useEffect, useMemo, useState, type ReactNode } from "react"
+import { Check, CircleDashed, RotateCcw, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { GlassPanel } from "@/components/glass"
 import { SessionHeader } from "@/components/session-header"
@@ -16,7 +16,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         .filter((id) => !state.todayNewDone.includes(id))
         .map((id) => wordMap.get(id))
         .filter((w): w is Word => Boolean(w)),
-    [state.todayNewDone, state.todayNewIds, wordMap],
+    [state.todayNewDone, state.todayNewIds, wordMap]
   )
   const current = queue[0]
   const [flipWordId, setFlipWordId] = useState<string | null>(null)
@@ -33,10 +33,13 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
       }
       if (!current) return
       if (e.key === "1" || e.key.toLowerCase() === "x") {
-        markNewWord(current.id, false)
+        markNewWord(current.id, "unknown")
       }
-      if (e.key === "2" || e.key.toLowerCase() === "k") {
-        markNewWord(current.id, true)
+      if (e.key === "2") {
+        markNewWord(current.id, "fuzzy")
+      }
+      if (e.key === "3" || e.key.toLowerCase() === "k") {
+        markNewWord(current.id, "known")
       }
     }
     window.addEventListener("keydown", onKey)
@@ -54,7 +57,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         <GlassPanel className="px-6 py-12 text-center">
           <p className="font-serif text-2xl text-slate-900">今日新词已完成</p>
           <p className="mt-2 text-sm text-slate-500">
-            不认识的词已经进入复习队列，可以马上做英译中。
+            不认识的词可以马上复习；标成模糊的词大约 30 分钟后再出现。
           </p>
           <div className="mt-6 flex justify-center gap-3">
             <Button
@@ -80,7 +83,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
     <div>
       <SessionHeader
         title="今日新词"
-        subtitle="点卡片翻转 · 空格翻转 · 1 不认识 / 2 认识"
+        subtitle="点卡片或空格翻转 · 1 不认识 · 2 模糊 · 3 认识"
         progress={{ current: todayDone, total: todayTotal }}
         onBack={() => setView("home")}
       />
@@ -102,7 +105,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
           aria-label={flipped ? "显示单词" : "显示释义"}
         >
           <div className="flip-face">
-            <GlassPanel className="flex h-full flex-col items-center justify-center px-6 py-8 text-center">
+            <div className="flip-sheet items-center justify-center px-6 py-8 text-center">
               <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
                 New word
               </p>
@@ -115,14 +118,18 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
               <div className="mt-5">
                 <SpeakButton text={current.word} />
               </div>
-              <p className="mt-8 text-xs text-slate-400">点击卡片查看释义与例句</p>
-            </GlassPanel>
+              <p className="mt-8 text-xs text-slate-400">
+                点击卡片查看释义与例句
+              </p>
+            </div>
           </div>
           <div className="flip-face flip-back">
-            <GlassPanel className="flex h-full flex-col overflow-y-auto px-5 py-6 sm:px-7">
+            <div className="flip-sheet px-5 py-6 sm:px-7">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="font-serif text-2xl text-slate-900">{current.word}</h2>
+                  <h2 className="font-serif text-2xl text-slate-900">
+                    {current.word}
+                  </h2>
                   <p className="mt-1 font-mono text-xs text-slate-500">
                     {current.phonetic}
                   </p>
@@ -138,7 +145,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
                 </p>
               ) : null}
               {current.exampleEn ? (
-                <figure className="mt-5 rounded-2xl border border-white/70 bg-white/40 px-4 py-3 text-left">
+                <figure className="mt-5 rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-3 text-left">
                   <blockquote className="text-sm leading-relaxed text-slate-700">
                     {current.exampleEn}
                   </blockquote>
@@ -149,29 +156,33 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
                   ) : null}
                 </figure>
               ) : null}
-            </GlassPanel>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          className="h-12 rounded-2xl border-rose-200/80 bg-rose-50/50 text-base text-rose-700 hover:bg-rose-50 active:translate-y-px"
-          onClick={() => markNewWord(current.id, false)}
-        >
-          <X className="size-4" />
-          不认识
-        </Button>
-        <Button
-          type="button"
-          className="h-12 rounded-2xl bg-emerald-600 text-base text-white shadow-lg shadow-emerald-700/15 hover:bg-emerald-500 active:translate-y-px"
-          onClick={() => markNewWord(current.id, true)}
-        >
-          <Check className="size-4" />
-          认识
-        </Button>
+      <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
+        <RatingButton
+          tone="unknown"
+          label="不认识"
+          hint="马上复习"
+          icon={<X className="size-4" />}
+          onClick={() => markNewWord(current.id, "unknown")}
+        />
+        <RatingButton
+          tone="fuzzy"
+          label="模糊"
+          hint="约 30 分钟"
+          icon={<CircleDashed className="size-4" />}
+          onClick={() => markNewWord(current.id, "fuzzy")}
+        />
+        <RatingButton
+          tone="known"
+          label="认识"
+          hint="约 1 天后"
+          icon={<Check className="size-4" />}
+          onClick={() => markNewWord(current.id, "known")}
+        />
       </div>
       <button
         type="button"
@@ -185,5 +196,49 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         {flipped ? "回到单词" : "翻转看释义"}
       </button>
     </div>
+  )
+}
+
+function RatingButton({
+  tone,
+  label,
+  hint,
+  icon,
+  onClick,
+}: {
+  tone: "unknown" | "fuzzy" | "known"
+  label: string
+  hint: string
+  icon: ReactNode
+  onClick: () => void
+}) {
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      className={cn(
+        "h-14 flex-col gap-0.5 rounded-2xl px-1 text-sm shadow-none active:translate-y-px sm:h-16",
+        tone === "unknown" &&
+          "border-rose-200/80 bg-rose-50/70 text-rose-700 hover:bg-rose-50",
+        tone === "fuzzy" &&
+          "border-amber-200/90 bg-amber-50/80 text-amber-800 hover:bg-amber-50",
+        tone === "known" &&
+          "border-emerald-200/80 bg-emerald-600 text-white hover:bg-emerald-500"
+      )}
+      onClick={onClick}
+    >
+      <span className="inline-flex items-center gap-1">
+        {icon}
+        {label}
+      </span>
+      <span
+        className={cn(
+          "text-[10px] font-normal",
+          tone === "known" ? "text-emerald-50" : "opacity-70"
+        )}
+      >
+        {hint}
+      </span>
+    </Button>
   )
 }

@@ -9,6 +9,7 @@ import {
   stageAfterCorrect,
   stageAfterLearn,
   stageAfterWrong,
+  type LearnRating,
 } from "@/lib/srs"
 import {
   clampDaily,
@@ -26,7 +27,7 @@ export function useVocabEngine() {
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading")
   const [error, setError] = useState<string | null>(null)
   const [state, setState] = useState<AppState>(() =>
-    typeof window === "undefined" ? defaultState() : loadState(),
+    typeof window === "undefined" ? defaultState() : loadState()
   )
   const [view, setView] = useState<View>("home")
   const [now, setNow] = useState(() => Date.now())
@@ -67,13 +68,10 @@ export function useVocabEngine() {
     return map
   }, [words])
 
-  const dueIds = useMemo(
-    () => dueCardIds(state.cards, now),
-    [state.cards, now],
-  )
+  const dueIds = useMemo(() => dueCardIds(state.cards, now), [state.cards, now])
 
   const todayRemaining = state.todayNewIds.filter(
-    (id) => !state.todayNewDone.includes(id),
+    (id) => !state.todayNewDone.includes(id)
   ).length
   const todayTotal = state.todayNewIds.length
   const todayDone = state.todayNewDone.length
@@ -83,21 +81,22 @@ export function useVocabEngine() {
       const dailyTarget = clampDaily(n)
       persist(ensureTodayQueue({ ...state, dailyTarget }, words))
     },
-    [persist, state, words],
+    [persist, state, words]
   )
 
   const markNewWord = useCallback(
-    (id: string, known: boolean) => {
+    (id: string, rating: LearnRating) => {
       const t = Date.now()
-      const stage = stageAfterLearn(known)
+      const stage = stageAfterLearn(rating)
       const card: WordCard = {
         stage,
-        nextReviewAt: known ? scheduleAt(stage, DEFAULT_EASE, t) : 0,
+        nextReviewAt:
+          rating === "unknown" ? 0 : scheduleAt(stage, DEFAULT_EASE, t),
         ease: DEFAULT_EASE,
         wrongCount: 0,
         correctCount: 0,
         introducedAt: t,
-        known,
+        known: rating === "known",
       }
       const introduced = state.introduced.includes(id)
         ? state.introduced
@@ -111,10 +110,10 @@ export function useVocabEngine() {
           introduced,
           todayNewDone,
           cards: { ...state.cards, [id]: card },
-        }),
+        })
       )
     },
-    [persist, state],
+    [persist, state]
   )
 
   const answerReview = useCallback(
@@ -141,10 +140,10 @@ export function useVocabEngine() {
         touchStreak({
           ...state,
           cards: { ...state.cards, [id]: card },
-        }),
+        })
       )
     },
-    [persist, state],
+    [persist, state]
   )
 
   const resetProgress = useCallback(() => {

@@ -24,7 +24,8 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
   } = engine
 
   const newPct = todayTotal === 0 ? 0 : (todayDone / todayTotal) * 100
-  const finishedBank = state.introduced.length >= words.length && words.length > 0
+  const finishedBank =
+    state.introduced.length >= words.length && words.length > 0
 
   return (
     <div className="flex flex-col gap-5">
@@ -60,7 +61,11 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
         <StatCard
           label="连续打卡"
           value={`${state.streak} 天`}
-          hint={state.lastActiveDate ? `上次 ${state.lastActiveDate}` : "今天开始第一天"}
+          hint={
+            state.lastActiveDate
+              ? `上次 ${state.lastActiveDate}`
+              : "今天开始第一天"
+          }
           icon={<Flame className="size-3.5 text-orange-400" />}
         />
         <StatCard
@@ -78,7 +83,7 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
               新词目标 {state.dailyTarget} · 识别后进入间隔复习
             </p>
           </div>
-          <span className="font-mono text-sm tabular-nums text-slate-500">
+          <span className="font-mono text-sm text-slate-500 tabular-nums">
             {Math.round(newPct)}%
           </span>
         </div>
@@ -129,9 +134,11 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
         <div className="mb-4 flex items-end justify-between">
           <div>
             <p className="text-sm font-medium text-slate-800">每日新词目标</p>
-            <p className="mt-0.5 text-xs text-slate-500">50–150，默认 100，可随时调整</p>
+            <p className="mt-0.5 text-xs text-slate-500">
+              50–150，默认 100，可随时调整
+            </p>
           </div>
-          <p className="font-serif text-2xl tabular-nums text-slate-900">
+          <p className="font-serif text-2xl text-slate-900 tabular-nums">
             {state.dailyTarget}
           </p>
         </div>
@@ -170,7 +177,8 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
           ))}
         </div>
         <p className="mt-3 text-xs leading-relaxed text-slate-500">
-          答对进入下一档；答错回退一档并更早再见面。进度保存在本机，刷新不会丢失。
+          新词可标不认识、模糊或认识：不认识马上复习，模糊约 30 分钟，认识约 1
+          天。复习答对进入下一档，答错回退一档。进度保存在本机。
         </p>
       </GlassPanel>
 
@@ -206,7 +214,11 @@ function StatCard({
         {icon}
         {label}
       </p>
-      <p className={cn("font-serif text-2xl tracking-tight text-slate-900 sm:text-[1.7rem]")}>
+      <p
+        className={cn(
+          "font-serif text-2xl tracking-tight text-slate-900 sm:text-[1.7rem]"
+        )}
+      >
         {value}
       </p>
       <p className="text-[11px] leading-snug text-slate-400">{hint}</p>
