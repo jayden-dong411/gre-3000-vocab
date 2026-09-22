@@ -13,7 +13,7 @@
     "preview": "vite preview --host 127.0.0.1 --port 43173",
     "desktop": "electron electron/main.cjs",
     "pack:linux": "electron-builder --linux dir",
-    "pack:mac": "electron-builder --mac zip --arm64"
+    "pack:mac": "electron-builder --mac zip --arm64 && bash scripts/rezip-mac-app.sh"
   },
   "build": {
     "appId": "com.gre3000.vocab",
