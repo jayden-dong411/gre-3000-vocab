@@ -107,7 +107,7 @@ export function BottomDock({ engine }: { engine: VocabEngine }) {
             type="button"
             onClick={() => setView(tab.id)}
             className={cn(
-              "flex w-[4.5rem] flex-col items-center gap-0.5 rounded-2xl px-2 py-2 text-[11px]",
+              "flex w-[4.5rem] flex-col items-center gap-0.5 rounded-2xl px-2 py-2 text-[11px] transition duration-200",
               active
                 ? "bg-white text-slate-900 shadow-sm"
                 : "text-slate-400 hover:text-slate-600"

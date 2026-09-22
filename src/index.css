@@ -179,8 +179,50 @@
   box-shadow: 0 10px 28px rgb(15 23 42 / 0.06);
 }
 
+@keyframes word-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.word-rise {
+  animation: word-rise 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.view-rise {
+  animation: word-rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hint-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+.hint-float {
+  animation: hint-float 1.6s ease-in-out infinite;
+}
+
+.ring-draw {
+  transition: stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .flip-card {
+  .flip-card,
+  .word-rise,
+  .view-rise,
+  .hint-float,
+  .ring-draw {
     transition: none;
+    animation: none;
   }
 }

@@ -14,6 +14,7 @@ export function WordBank({ engine }: { engine: VocabEngine }) {
   const [query, setQuery] = useState("")
   const [filter, setFilter] = useState<Filter>("all")
   const [shown, setShown] = useState(PAGE)
+  const [openId, setOpenId] = useState<string | null>(null)
 
   const stats = useMemo(() => {
     let mastered = 0
@@ -97,6 +98,7 @@ export function WordBank({ engine }: { engine: VocabEngine }) {
           onChange={(e) => {
             setQuery(e.target.value)
             setShown(PAGE)
+            setOpenId(null)
           }}
           placeholder="搜索单词或中文释义..."
           className="h-11 w-full rounded-2xl border border-white/80 bg-white/70 px-4 text-sm outline-none placeholder:text-slate-400"
@@ -116,6 +118,7 @@ export function WordBank({ engine }: { engine: VocabEngine }) {
               onClick={() => {
                 setFilter(id)
                 setShown(PAGE)
+                setOpenId(null)
               }}
               className={cn(
                 "rounded-full px-3 py-1 text-xs",
@@ -136,26 +139,52 @@ export function WordBank({ engine }: { engine: VocabEngine }) {
         </GlassPanel>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
-          {visible.map((word) => {
+          {visible.map((word, index) => {
             const status = statusOf(word, state.cards, introducedSet)
+            const open = openId === word.id
             return (
-              <GlassPanel
+              <button
                 key={word.id}
-                className="flex items-start justify-between gap-3 p-4"
+                type="button"
+                aria-expanded={open}
+                onClick={() =>
+                  setOpenId((id) => (id === word.id ? null : word.id))
+                }
+                style={{ animationDelay: `${Math.min(index, 10) * 28}ms` }}
+                className="word-rise rounded-[1.4rem] border border-white/80 bg-white/75 p-4 text-left shadow-[0_10px_28px_rgb(15_23_42/0.05)] transition duration-200 hover:-translate-y-0.5"
               >
-                <div className="min-w-0">
-                  <p className="font-serif text-lg text-slate-900">
-                    {word.word}
-                  </p>
-                  <p className="mt-0.5 font-mono text-[11px] text-slate-400">
-                    {word.phonetic || "暂无音标"}
-                  </p>
-                  <p className="mt-1 truncate text-sm text-slate-600">
-                    {word.meaningZh || "暂无释义"}
-                  </p>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-serif text-lg text-slate-900">
+                      {word.word}
+                    </p>
+                    <p className="mt-0.5 font-mono text-[11px] text-slate-400">
+                      {word.phonetic || "暂无音标"}
+                    </p>
+                  </div>
+                  <StatusBadge status={status} />
                 </div>
-                <StatusBadge status={status} />
-              </GlassPanel>
+                <div
+                  className={cn(
+                    "grid transition-[grid-template-rows] duration-300 ease-out",
+                    open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                  )}
+                >
+                  <div className="min-h-0 overflow-hidden" aria-hidden={!open}>
+                    <p className="pt-2 text-sm leading-relaxed text-slate-700">
+                      {word.meaningZh || "暂无释义"}
+                    </p>
+                    {word.meaningEn ? (
+                      <p className="pt-1 text-xs leading-relaxed text-slate-400">
+                        {word.meaningEn}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+                <p className="mt-2 text-[11px] text-slate-400">
+                  {open ? "点击收起" : "点击查看释义"}
+                </p>
+              </button>
             )
           })}
         </div>

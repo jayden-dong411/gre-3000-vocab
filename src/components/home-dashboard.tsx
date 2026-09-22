@@ -68,7 +68,7 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
             type="button"
             disabled={todayRemaining === 0}
             onClick={() => setView("learn")}
-            className="mt-4 h-12 w-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 text-sm font-medium text-white shadow-lg shadow-violet-500/20 disabled:opacity-40"
+            className="mt-4 h-12 w-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 text-sm font-medium text-white shadow-lg shadow-violet-500/20 transition duration-200 hover:-translate-y-0.5 active:translate-y-px disabled:opacity-40 disabled:hover:translate-y-0"
           >
             <BookOpen className="mr-1 inline size-4" />
             {todayDone > 0 && todayRemaining > 0 ? "继续学习" : "开始学习"}
@@ -91,7 +91,7 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
             type="button"
             disabled={dueIds.length === 0}
             onClick={() => setView("review")}
-            className="mt-4 h-12 w-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 text-sm font-medium text-white shadow-lg shadow-violet-500/20 disabled:opacity-40"
+            className="mt-4 h-12 w-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 text-sm font-medium text-white shadow-lg shadow-violet-500/20 transition duration-200 hover:-translate-y-0.5 active:translate-y-px disabled:opacity-40 disabled:hover:translate-y-0"
           >
             <RotateCcw className="mr-1 inline size-4" />
             开始复习
@@ -197,6 +197,7 @@ function ProgressRing({
           stroke="#7c3aed"
           strokeWidth="7"
           strokeLinecap="round"
+          className="ring-draw"
           strokeDasharray={circ}
           strokeDashoffset={offset}
         />

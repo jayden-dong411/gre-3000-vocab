@@ -43,7 +43,12 @@ export function App() {
           }
         >
           <div
-            className={learnWithReview ? "flex min-h-0 flex-col" : undefined}
+            key={engine.view}
+            className={
+              learnWithReview
+                ? "view-rise flex min-h-0 flex-col"
+                : "view-rise"
+            }
           >
             {engine.status === "ready" && engine.view === "home" ? (
               <InstallTip />
