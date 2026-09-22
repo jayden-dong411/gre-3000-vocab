@@ -21,20 +21,24 @@ export function ReviewSession({
   hotkeys?: boolean
 }) {
   const { dueIds, wordMap, words, answerReview, setView, state } = engine
-  const [sessionIds] = useState<string[]>(dueIds)
+  const [queue, setQueue] = useState<string[]>(() => dueIds)
   const [index, setIndex] = useState(0)
   const [phase, setPhase] = useState<Phase>("ask")
   const [picked, setPicked] = useState<string | null>(null)
+  const [lockedId, setLockedId] = useState<string | null>(null)
+  const [nextReady, setNextReady] = useState(false)
   const [sessionSeed] = useState(() => Date.now().toString(36))
-  const queue = useMemo(() => {
-    const seen = new Set(sessionIds)
-    const extras = dueIds.filter((id) => !seen.has(id))
-    return extras.length === 0 ? sessionIds : [...sessionIds, ...extras]
-  }, [dueIds, sessionIds])
 
-  const currentId = queue[index]
+  const extras = dueIds.filter((id) => !queue.includes(id))
+  if (extras.length > 0) {
+    setQueue([...queue, ...extras])
+  }
+  const liveQueue = extras.length > 0 ? [...queue, ...extras] : queue
+
+  const currentId =
+    phase === "feedback" && lockedId ? lockedId : liveQueue[index]
   const current = currentId ? wordMap.get(currentId) : undefined
-  const total = queue.length
+  const total = liveQueue.length
 
   const choices = useMemo<Choice[]>(() => {
     if (!current) return []
@@ -42,20 +46,31 @@ export function ReviewSession({
   }, [current, sessionSeed, words])
 
   const goNext = useCallback(() => {
-    setIndex((i) => (i + 1 >= queue.length ? queue.length : i + 1))
+    if (!nextReady) return
+    setIndex((i) => (i + 1 >= liveQueue.length ? liveQueue.length : i + 1))
     setPhase("ask")
     setPicked(null)
-  }, [queue.length])
+    setLockedId(null)
+    setNextReady(false)
+  }, [liveQueue.length, nextReady])
 
   const select = useCallback(
     (choice: Choice) => {
       if (phase !== "ask" || !current) return
       setPicked(choice.id)
+      setLockedId(current.id)
       setPhase("feedback")
+      setNextReady(false)
       answerReview(current.id, choice.correct)
     },
     [answerReview, current, phase]
   )
+
+  useEffect(() => {
+    if (phase !== "feedback") return
+    const timer = window.setTimeout(() => setNextReady(true), 320)
+    return () => window.clearTimeout(timer)
+  }, [phase, lockedId])
 
   useEffect(() => {
     if (!hotkeys) return
@@ -67,14 +82,14 @@ export function ReviewSession({
           const choice = choices[n - 1]
           if (choice) select(choice)
         }
-      } else if (e.key === "Enter" || e.key === " ") {
+      } else if (nextReady && (e.key === "Enter" || e.key === " ")) {
         e.preventDefault()
         goNext()
       }
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [hotkeys, phase, choices, select, goNext])
+  }, [hotkeys, phase, choices, select, goNext, nextReady])
 
   if (total === 0 || index >= total) {
     return (
@@ -149,7 +164,7 @@ export function ReviewSession({
       ) : (
         <SessionHeader
           title="间隔复习"
-          subtitle="英译中四选一 · 数字键 1–4 也可作答"
+          subtitle="英译中四选一 · 1–4 作答，看完对错再下一题"
           progress={{ current: index, total }}
           onBack={() => setView("home")}
         />
@@ -247,7 +262,8 @@ export function ReviewSession({
               </div>
             </div>
             <Button
-              className="mt-4 h-11 w-full rounded-xl bg-slate-900 text-white hover:bg-slate-800"
+              className="mt-4 h-11 w-full rounded-xl bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50"
+              disabled={!nextReady}
               onClick={goNext}
             >
               下一题
