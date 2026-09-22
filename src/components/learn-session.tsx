@@ -270,23 +270,6 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         <RotateCcw className="size-3" />
         {flipped ? "回到单词" : "翻转看释义"}
       </button>
-      {queue.length > 1 ? (
-        <div className="mt-5 hidden lg:block">
-          <p className="mb-2 text-xs text-slate-500">
-            今天后面还有 {queue.length - 1} 个
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {queue.slice(1).map((word) => (
-              <span
-                key={word.id}
-                className="rounded-lg border border-white/80 bg-white/70 px-2 py-1 text-xs leading-none text-slate-700"
-              >
-                {word.word}
-              </span>
-            ))}
-          </div>
-        </div>
-      ) : null}
     </div>
   )
 }

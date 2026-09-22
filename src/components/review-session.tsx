@@ -11,13 +11,26 @@ import { cn } from "@/lib/utils"
 
 type Phase = "ask" | "feedback"
 
-export function ReviewSession({ engine }: { engine: VocabEngine }) {
+export function ReviewSession({
+  engine,
+  embedded = false,
+  hotkeys = true,
+}: {
+  engine: VocabEngine
+  embedded?: boolean
+  hotkeys?: boolean
+}) {
   const { dueIds, wordMap, words, answerReview, setView, state } = engine
-  const [queue] = useState<string[]>(dueIds)
+  const [sessionIds] = useState<string[]>(dueIds)
   const [index, setIndex] = useState(0)
   const [phase, setPhase] = useState<Phase>("ask")
   const [picked, setPicked] = useState<string | null>(null)
   const [sessionSeed] = useState(() => Date.now().toString(36))
+  const queue = useMemo(() => {
+    const seen = new Set(sessionIds)
+    const extras = dueIds.filter((id) => !seen.has(id))
+    return extras.length === 0 ? sessionIds : [...sessionIds, ...extras]
+  }, [dueIds, sessionIds])
 
   const currentId = queue[index]
   const current = currentId ? wordMap.get(currentId) : undefined
@@ -45,6 +58,7 @@ export function ReviewSession({ engine }: { engine: VocabEngine }) {
   )
 
   useEffect(() => {
+    if (!hotkeys) return
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return
       if (phase === "ask") {
@@ -60,29 +74,39 @@ export function ReviewSession({ engine }: { engine: VocabEngine }) {
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [phase, choices, select, goNext])
+  }, [hotkeys, phase, choices, select, goNext])
 
   if (total === 0 || index >= total) {
     return (
-      <div>
-        <SessionHeader
-          title="间隔复习"
-          progress={{ current: total, total: total }}
-          onBack={() => setView("home")}
-        />
-        <GlassPanel className="px-6 py-12 text-center">
-          <p className="font-serif text-2xl text-slate-900">
+      <div className={cn(embedded && "flex h-full min-h-0 flex-col")}>
+        {embedded ? null : (
+          <SessionHeader
+            title="间隔复习"
+            progress={{ current: total, total: total }}
+            onBack={() => setView("home")}
+          />
+        )}
+        <GlassPanel
+          className={cn(
+            "px-6 py-12 text-center",
+            embedded && "flex flex-1 flex-col items-center justify-center py-8"
+          )}
+        >
+          <p className="text-sm font-medium text-slate-500">复习</p>
+          <p className="mt-2 font-serif text-2xl text-slate-900">
             {total === 0 ? "暂时没有到期复习" : "本轮复习完成"}
           </p>
           <p className="mt-2 text-sm text-slate-500">
             新学的词会按 8 分钟 → 15 天的节奏回来。
           </p>
-          <Button
-            className="mt-6 h-10 rounded-xl bg-slate-900 text-white hover:bg-slate-800"
-            onClick={() => setView("home")}
-          >
-            返回首页
-          </Button>
+          {embedded ? null : (
+            <Button
+              className="mt-6 h-10 rounded-xl bg-slate-900 text-white hover:bg-slate-800"
+              onClick={() => setView("home")}
+            >
+              返回首页
+            </Button>
+          )}
         </GlassPanel>
       </div>
     )
@@ -113,15 +137,30 @@ export function ReviewSession({ engine }: { engine: VocabEngine }) {
   const nextLabel = card ? SRS_LABELS[card.stage] : ""
 
   return (
-    <div>
-      <SessionHeader
-        title="间隔复习"
-        subtitle="英译中四选一 · 数字键 1–4 也可作答"
-        progress={{ current: index, total }}
-        onBack={() => setView("home")}
-      />
+    <div className={cn(embedded && "flex h-full min-h-0 flex-col")}>
+      {embedded ? (
+        <div className="mb-3 flex items-baseline justify-between gap-3">
+          <p className="text-sm font-medium text-slate-800">复习</p>
+          <p className="font-mono text-xs text-slate-400 tabular-nums">
+            {index + 1} / {total}
+            {hotkeys ? " · 1–4 作答" : ""}
+          </p>
+        </div>
+      ) : (
+        <SessionHeader
+          title="间隔复习"
+          subtitle="英译中四选一 · 数字键 1–4 也可作答"
+          progress={{ current: index, total }}
+          onBack={() => setView("home")}
+        />
+      )}
 
-      <div className="lg:grid lg:grid-cols-[minmax(14rem,0.72fr)_minmax(0,1.28fr)] lg:items-start lg:gap-4">
+      <div
+        className={cn(
+          embedded && "grid min-h-0 flex-1 content-center gap-3",
+          "lg:grid lg:grid-cols-[minmax(14rem,0.72fr)_minmax(0,1.28fr)] lg:items-center lg:gap-4"
+        )}
+      >
         <GlassPanel className="flex flex-col items-center justify-center px-5 py-8 text-center sm:px-6">
           <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
             选择正确释义
@@ -211,27 +250,6 @@ export function ReviewSession({ engine }: { engine: VocabEngine }) {
           </GlassPanel>
         ) : null}
       </div>
-      {queue.length - index > 1 ? (
-        <div className="mt-4 hidden lg:block">
-          <p className="mb-2 text-xs text-slate-500">
-            本轮后面还有 {queue.length - index - 1} 个
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {queue.slice(index + 1).map((id) => {
-              const word = wordMap.get(id)
-              if (!word) return null
-              return (
-                <span
-                  key={id}
-                  className="rounded-lg border border-white/80 bg-white/70 px-2 py-1 text-xs leading-none text-slate-700"
-                >
-                  {word.word}
-                </span>
-              )
-            })}
-          </div>
-        </div>
-      ) : null}
     </div>
   )
 }

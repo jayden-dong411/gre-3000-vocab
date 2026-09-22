@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import { AmbientBackground, GlassPanel } from "@/components/glass"
 import { DesktopRail } from "@/components/desktop-rail"
 import { HomeDashboard } from "@/components/home-dashboard"
@@ -7,8 +8,26 @@ import { ReviewSession } from "@/components/review-session"
 import { Button } from "@/components/ui/button"
 import { useVocabEngine } from "@/hooks/use-vocab"
 
+function useWideScreen() {
+  const [wide, setWide] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(min-width: 1024px)").matches
+      : false
+  )
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)")
+    const onChange = () => setWide(media.matches)
+    media.addEventListener("change", onChange)
+    return () => media.removeEventListener("change", onChange)
+  }, [])
+  return wide
+}
+
 export function App() {
   const engine = useVocabEngine()
+  const wide = useWideScreen()
+  const splitReview =
+    wide && engine.status === "ready" && engine.view !== "review"
 
   return (
     <div className="relative min-h-svh text-slate-800 lg:h-svh lg:overflow-hidden">
@@ -16,22 +35,41 @@ export function App() {
       <div className="lg:grid lg:h-full lg:grid-cols-[272px_minmax(0,1fr)]">
         {engine.status === "ready" ? <DesktopRail engine={engine} /> : null}
         <main className="mx-auto flex w-full max-w-2xl flex-col px-4 py-6 sm:px-6 sm:py-10 lg:mx-0 lg:h-full lg:min-h-0 lg:max-w-none lg:px-8 lg:py-5 xl:px-10">
-          <div className="lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
-            {engine.status === "ready" && engine.view === "home" ? (
-              <InstallTip />
-            ) : null}
-            {engine.status === "loading" ? <LoadingState /> : null}
-            {engine.status === "error" ? (
-              <ErrorState message={engine.error ?? "词库加载失败"} />
-            ) : null}
-            {engine.status === "ready" && engine.view === "home" ? (
-              <HomeDashboard engine={engine} />
-            ) : null}
-            {engine.status === "ready" && engine.view === "learn" ? (
-              <LearnSession engine={engine} />
+          <div className="flex flex-col gap-4 lg:h-full lg:min-h-0 lg:gap-3">
+            {engine.view !== "review" ? (
+              <div
+                className={
+                  splitReview
+                    ? "max-h-[46%] shrink-0 overflow-y-auto"
+                    : undefined
+                }
+              >
+                {engine.status === "ready" && engine.view === "home" ? (
+                  <InstallTip />
+                ) : null}
+                {engine.status === "loading" ? <LoadingState /> : null}
+                {engine.status === "error" ? (
+                  <ErrorState message={engine.error ?? "词库加载失败"} />
+                ) : null}
+                {engine.status === "ready" && engine.view === "home" ? (
+                  <HomeDashboard engine={engine} />
+                ) : null}
+                {engine.status === "ready" && engine.view === "learn" ? (
+                  <LearnSession engine={engine} />
+                ) : null}
+              </div>
             ) : null}
             {engine.status === "ready" && engine.view === "review" ? (
               <ReviewSession engine={engine} />
+            ) : null}
+            {splitReview ? (
+              <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/30 p-4">
+                <ReviewSession
+                  engine={engine}
+                  embedded
+                  hotkeys={engine.view !== "learn"}
+                />
+              </section>
             ) : null}
           </div>
         </main>

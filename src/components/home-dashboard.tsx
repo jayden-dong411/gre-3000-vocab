@@ -21,7 +21,6 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
     setView,
     setDailyTarget,
     resetProgress,
-    wordMap,
   } = engine
 
   const newPct = todayTotal === 0 ? 0 : (todayDone / todayTotal) * 100
@@ -77,7 +76,7 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
         />
       </div>
 
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(16rem,0.8fr)]">
+      <div className="grid items-start gap-4">
         <GlassPanel className="p-5 sm:p-6">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
@@ -97,7 +96,7 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
             />
           </div>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
             <Button
               type="button"
               size="lg"
@@ -114,7 +113,7 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
               variant="outline"
               disabled={dueIds.length === 0}
               onClick={() => setView("review")}
-              className="h-12 rounded-2xl border-white/80 bg-white/50 text-base text-slate-800 hover:bg-white/80 active:translate-y-px"
+              className="h-12 rounded-2xl border-white/80 bg-white/50 text-base text-slate-800 hover:bg-white/80 active:translate-y-px lg:hidden"
             >
               <RotateCcw className="size-4" />
               开始复习
@@ -133,7 +132,7 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
           ) : null}
         </GlassPanel>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 lg:hidden">
           <GlassPanel className="p-5 sm:p-6 lg:hidden">
             <div className="mb-4 flex items-end justify-between">
               <div>
@@ -189,39 +188,6 @@ export function HomeDashboard({ engine }: { engine: VocabEngine }) {
           </GlassPanel>
         </div>
       </div>
-
-      <GlassPanel className="p-4 sm:p-5">
-        <div className="mb-3 flex items-baseline justify-between gap-3">
-          <p className="text-sm font-medium text-slate-800">今日词表</p>
-          <p className="font-mono text-xs text-slate-400 tabular-nums">
-            {todayDone}/{todayTotal || state.dailyTarget}
-          </p>
-        </div>
-        {state.todayNewIds.length === 0 ? (
-          <p className="text-sm text-slate-500">今天的新词队列还是空的。</p>
-        ) : (
-          <div className="flex flex-wrap gap-1.5">
-            {state.todayNewIds.map((id) => {
-              const word = wordMap.get(id)
-              if (!word) return null
-              const seen = state.todayNewDone.includes(id)
-              return (
-                <span
-                  key={id}
-                  className={cn(
-                    "rounded-lg border px-2 py-1 text-xs leading-none",
-                    seen
-                      ? "border-transparent bg-slate-100/70 text-slate-400 line-through"
-                      : "border-white/80 bg-white/70 text-slate-800"
-                  )}
-                >
-                  {word.word}
-                </span>
-              )
-            })}
-          </div>
-        )}
-      </GlassPanel>
 
       <button
         type="button"
