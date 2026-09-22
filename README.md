@@ -32,7 +32,11 @@ npm run preview
 
 ## 桌面应用
 
-先 `npm install`（会装上可选的 Electron），再打包：
+**Mac 安装包（已发布）：** https://github.com/jayden-dong411/gre-3000-vocab/releases/latest
+
+下载 `GRE.3000-1.0.0-arm64-mac.zip`，解压后把 **GRE 3000.app** 拖进「应用程序」。第一次请右键打开（未签名）。仓库里的 `release/` 不会进 git，安装包只走 [GitHub Releases](https://github.com/jayden-dong411/gre-3000-vocab/releases/tag/v1.0.0)。
+
+本地再打一份：先 `npm install`（会装上可选的 Electron），再打包：
 
 ```bash
 npm run build
