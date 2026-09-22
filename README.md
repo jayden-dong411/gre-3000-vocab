@@ -34,7 +34,7 @@ npm run preview
 
 **Mac 安装包（已发布）：** https://github.com/jayden-dong411/gre-3000-vocab/releases/latest
 
-下载 `GRE.3000-1.0.0-arm64-mac.zip`，解压后把 **GRE 3000.app** 拖进「应用程序」。第一次请右键打开（未签名）。仓库里的 `release/` 不会进 git，安装包只走 [GitHub Releases](https://github.com/jayden-dong411/gre-3000-vocab/releases/tag/v1.0.0)。
+下载 `GRE.3000-1.0.1-arm64-mac.zip`，解压后把 **GRE 3000.app** 拖进「应用程序」。第一次请右键打开（未签名）。安装包只含 Electron 运行时和打好的页面（词库约 2MB），开发依赖不会打进去。仓库里的 `release/` 不会进 git，安装包只走 [GitHub Releases](https://github.com/jayden-dong411/gre-3000-vocab/releases/latest)。
 
 本地再打一份：先 `npm install`（会装上可选的 Electron），再打包：
 
@@ -42,7 +42,7 @@ npm run preview
 npm run build
 npm run desktop          # 本机直接打开窗口
 npm run pack:linux       # Linux 可执行目录 release/linux-unpacked
-npm run pack:mac         # Apple Silicon 安装包 release/GRE 3000-1.0.0-arm64-mac.zip（未签名，在 Mac 上右键打开）
+npm run pack:mac         # Apple Silicon 安装包 release/GRE 3000-1.0.1-arm64-mac.zip（未签名，在 Mac 上右键打开）
 ```
 
 窗口默认 1440×900。应用在本机起一个只监听 127.0.0.1 的静态服务来打开 `dist/`，进度仍写在这个窗口自己的本地存储里。
