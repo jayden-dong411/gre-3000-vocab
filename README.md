@@ -34,7 +34,7 @@ npm run preview
 
 **Mac 安装包（已发布）：** https://github.com/jayden-dong411/gre-3000-vocab/releases/latest
 
-下载 `GRE-3000-1.0.2-arm64-mac.tar.gz`，双击解压。文件夹里先点 **打开应用.command**。
+下载 `GRE-3000-1.0.3-arm64-mac.tar.gz`，双击解压。文件夹里先点 **打开应用.command**。
 
 系统提示「已损坏，无法打开」时，把 App 拖进「应用程序」，打开「终端」整段粘贴：
 
@@ -51,7 +51,7 @@ open "/Applications/GRE 3000.app"
 npm run build
 npm run desktop          # 本机直接打开窗口
 npm run pack:linux       # Linux 可执行目录 release/linux-unpacked
-npm run pack:mac         # Apple Silicon 安装包 release/GRE-3000-1.0.2-arm64-mac.tar.gz
+npm run pack:mac         # Apple Silicon 安装包 release/GRE-3000-1.0.3-arm64-mac.tar.gz
 ```
 
 窗口默认 1440×900。应用在本机起一个只监听 127.0.0.1 的静态服务来打开 `dist/`，进度仍写在这个窗口自己的本地存储里。
