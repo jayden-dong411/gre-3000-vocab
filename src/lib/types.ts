@@ -41,8 +41,11 @@ export type AppState = {
   todayDate: string
   todayNewIds: string[]
   todayNewDone: string[]
+  todayCorrect: number
+  todayWrong: number
+  dailyCounts: Record<string, number>
   introduced: string[]
   cards: Record<string, WordCard>
 }
 
-export type View = "home" | "learn" | "review"
+export type View = "home" | "learn" | "review" | "bank"

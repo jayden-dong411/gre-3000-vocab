@@ -12,6 +12,30 @@ export function yesterdayKey(from = new Date()): string {
   return dateKey(d)
 }
 
+const WEEKDAYS = [
+  "星期日",
+  "星期一",
+  "星期二",
+  "星期三",
+  "星期四",
+  "星期五",
+  "星期六",
+]
+
+export function formatDayLabel(d = new Date()): string {
+  return `${d.getMonth() + 1}月${d.getDate()}日 ${WEEKDAYS[d.getDay()]}`
+}
+
+export function recentDates(count = 7, from = new Date()): Date[] {
+  const days: Date[] = []
+  for (let i = count - 1; i >= 0; i--) {
+    const d = new Date(from)
+    d.setDate(d.getDate() - i)
+    days.push(d)
+  }
+  return days
+}
+
 export function greeting(d = new Date()): string {
   const h = d.getHours()
   if (h < 5) return "夜深了，还在坚持"

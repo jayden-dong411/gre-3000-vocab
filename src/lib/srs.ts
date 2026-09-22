@@ -22,6 +22,12 @@ export const SRS_LABELS = [
 ] as const
 
 export const MAX_STAGE = SRS_INTERVALS_MS.length - 1
+/** Reaching the 7-day band counts as mastered. */
+export const MASTERED_STAGE = 6
+
+export function isMastered(stage: number): boolean {
+  return stage >= MASTERED_STAGE
+}
 export const DEFAULT_EASE = 2.5
 
 export function clampStage(stage: number): number {

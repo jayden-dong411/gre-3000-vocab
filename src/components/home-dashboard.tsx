@@ -1,234 +1,213 @@
-import type { ReactNode } from "react"
-import { BookOpen, Flame, RotateCcw, Sparkles } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
+import { BookOpen, RotateCcw } from "lucide-react"
 import { GlassPanel } from "@/components/glass"
-import { greeting } from "@/lib/dates"
-import { MAX_DAILY, MIN_DAILY } from "@/lib/storage"
-import { SRS_LABELS } from "@/lib/srs"
 import type { VocabEngine } from "@/hooks/use-vocab"
+import { dateKey, recentDates } from "@/lib/dates"
+import { isMastered, SRS_LABELS } from "@/lib/srs"
 import { cn } from "@/lib/utils"
 
 export function HomeDashboard({ engine }: { engine: VocabEngine }) {
-  const {
-    state,
-    words,
-    todayDone,
-    todayTotal,
-    todayRemaining,
-    dueIds,
-    setView,
-    setDailyTarget,
-    resetProgress,
-  } = engine
-
-  const newPct = todayTotal === 0 ? 0 : (todayDone / todayTotal) * 100
-  const finishedBank =
-    state.introduced.length >= words.length && words.length > 0
+  const { state, todayDone, todayTotal, todayRemaining, dueIds, setView } =
+    engine
+  const goal = todayTotal || state.dailyTarget
+  const donePct = goal === 0 ? 0 : todayDone / goal
+  const mastered = state.introduced.filter((id) => {
+    const card = state.cards[id]
+    return card ? isMastered(card.stage) : false
+  }).length
+  const answered = state.todayCorrect + state.todayWrong
+  const accuracy =
+    answered === 0 ? null : Math.round((state.todayCorrect / answered) * 100)
+  const days = recentDates(7)
+  const today = dateKey()
 
   return (
     <div className="flex flex-col gap-4">
-      <header className="flex items-start justify-between gap-4 pt-1">
-        <div>
-          <p className="text-sm text-slate-500 lg:hidden">{greeting()}</p>
-          <h1 className="mt-1 font-serif text-3xl tracking-tight text-slate-900 sm:text-4xl lg:mt-0 lg:text-2xl">
-            <span className="lg:hidden">GRE 镇考 3000</span>
-            <span className="hidden lg:inline">今天的进度</span>
-          </h1>
-          <p className="mt-1.5 max-w-[20rem] text-sm leading-relaxed text-slate-500 lg:hidden">
-            乱序词表 · 艾宾浩斯复习 · 今天也往前走一点
-          </p>
-        </div>
-        <Badge
-          variant="outline"
-          className="mt-1 rounded-full border-white/80 bg-white/50 px-3 py-1 text-[11px] tracking-wide text-slate-600"
-        >
-          {words.length.toLocaleString()} 词
-        </Badge>
-      </header>
-
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard
-          label="今日新词"
-          value={`${todayDone}/${todayTotal || state.dailyTarget}`}
-          hint={todayRemaining > 0 ? `还剩 ${todayRemaining} 个` : "今日已完成"}
-        />
-        <StatCard
-          label="待复习"
-          value={String(dueIds.length)}
-          hint={dueIds.length > 0 ? "现在就可以开始" : "暂无到期卡片"}
-        />
-        <StatCard
-          label="连续打卡"
-          value={`${state.streak} 天`}
-          hint={
-            state.lastActiveDate
-              ? `上次 ${state.lastActiveDate}`
-              : "今天开始第一天"
-          }
-          icon={<Flame className="size-3.5 text-orange-400" />}
-        />
-        <StatCard
-          label="已学单词"
-          value={String(state.introduced.length)}
-          hint={`词库 ${words.length}`}
-        />
-      </div>
-
-      <div className="grid items-start gap-4">
-        <GlassPanel className="p-5 sm:p-6">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-medium text-slate-800">今日进度</p>
-              <p className="mt-0.5 text-xs text-slate-500">
-                新词目标 {state.dailyTarget} · 识别后进入间隔复习
-              </p>
+      <GlassPanel className="p-5 sm:p-6">
+        <div className="flex items-center gap-5">
+          <ProgressRing value={donePct} done={todayDone} goal={goal} />
+          <div className="min-w-0 flex-1">
+            <h1 className="font-serif text-2xl tracking-tight text-slate-900 sm:text-3xl">
+              {todayRemaining > 0
+                ? `再学 ${todayRemaining} 个新词`
+                : "今日新词已完成"}
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">
+              {dueIds.length > 0
+                ? `有 ${dueIds.length} 个词到期复习，趁热打铁。`
+                : "今天还没有到期的复习。"}
+              {state.streak > 0 ? ` 连续打卡 ${state.streak} 天。` : ""}
+            </p>
+            <div className="mt-4 flex gap-6">
+              <Stat value={String(state.introduced.length)} label="已学" />
+              <Stat value={String(mastered)} label="已掌握" />
+              <Stat
+                value={accuracy === null ? "—" : `${accuracy}%`}
+                label="今日正确率"
+              />
             </div>
-            <span className="font-mono text-sm text-slate-500 tabular-nums">
-              {Math.round(newPct)}%
-            </span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-white/70">
+        </div>
+      </GlassPanel>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <GlassPanel className="p-4 sm:p-5">
+          <p className="text-xs text-violet-500">学习</p>
+          <p className="mt-1 text-sm font-medium text-slate-800">今日新词</p>
+          <p className="mt-3 text-sm text-slate-500">
+            {todayRemaining > 0
+              ? `${todayRemaining} 个待学习`
+              : "今天的新词已经看完"}
+          </p>
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-violet-100">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-sky-400/90 to-violet-400/90 transition-all duration-500"
-              style={{ width: `${newPct}%` }}
+              className="h-full rounded-full bg-violet-500"
+              style={{ width: `${donePct * 100}%` }}
             />
           </div>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-            <Button
-              type="button"
-              size="lg"
-              disabled={todayRemaining === 0}
-              onClick={() => setView("learn")}
-              className="h-12 rounded-2xl bg-slate-900 text-base text-white shadow-lg shadow-slate-900/15 hover:bg-slate-800 active:translate-y-px"
-            >
-              <BookOpen className="size-4" />
-              开始背新词
-            </Button>
-            <Button
-              type="button"
-              size="lg"
-              variant="outline"
-              disabled={dueIds.length === 0}
-              onClick={() => setView("review")}
-              className="h-12 rounded-2xl border-white/80 bg-white/50 text-base text-slate-800 hover:bg-white/80 active:translate-y-px lg:hidden"
-            >
-              <RotateCcw className="size-4" />
-              开始复习
-              {dueIds.length > 0 ? (
-                <span className="ml-1 rounded-full bg-slate-900 px-2 py-0.5 text-[11px] text-white">
-                  {dueIds.length}
-                </span>
-              ) : null}
-            </Button>
-          </div>
-
-          {finishedBank ? (
-            <p className="mt-4 text-center text-sm text-slate-500">
-              词库已经全部学过一遍，后续以复习为主。
-            </p>
-          ) : null}
+          <button
+            type="button"
+            disabled={todayRemaining === 0}
+            onClick={() => setView("learn")}
+            className="mt-4 h-12 w-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 text-sm font-medium text-white shadow-lg shadow-violet-500/20 disabled:opacity-40"
+          >
+            <BookOpen className="mr-1 inline size-4" />
+            {todayDone > 0 && todayRemaining > 0 ? "继续学习" : "开始学习"}
+          </button>
         </GlassPanel>
 
-        <div className="flex flex-col gap-5 lg:hidden">
-          <GlassPanel className="p-5 sm:p-6 lg:hidden">
-            <div className="mb-4 flex items-end justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-800">
-                  每日新词目标
-                </p>
-                <p className="mt-0.5 text-xs text-slate-500">
-                  50–150，默认 100，可随时调整
-                </p>
-              </div>
-              <p className="font-serif text-2xl text-slate-900 tabular-nums">
-                {state.dailyTarget}
-              </p>
-            </div>
-            <Slider
-              min={MIN_DAILY}
-              max={MAX_DAILY}
-              step={10}
-              value={[state.dailyTarget]}
-              onValueChange={(v) => {
-                const n = v[0]
-                if (typeof n === "number") setDailyTarget(n)
-              }}
-              className="py-2"
-              aria-label="每日新词目标"
+        <GlassPanel className="p-4 sm:p-5">
+          <p className="text-xs text-amber-600">复习</p>
+          <p className="mt-1 text-sm font-medium text-slate-800">到期复习</p>
+          <p className="mt-3 text-sm text-slate-500">
+            {dueIds.length > 0 ? `${dueIds.length} 个词到期` : "暂无到期卡片"}
+          </p>
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
+            <div
+              className="h-full rounded-full bg-slate-300"
+              style={{ width: dueIds.length > 0 ? "100%" : "0%" }}
             />
-            <div className="mt-2 flex justify-between text-[11px] text-slate-400">
-              <span>50</span>
-              <span>100</span>
-              <span>150</span>
-            </div>
-          </GlassPanel>
-
-          <GlassPanel className="p-5 sm:p-6">
-            <div className="mb-3 flex items-center gap-2">
-              <Sparkles className="size-4 text-violet-400" />
-              <p className="text-sm font-medium text-slate-800">间隔复习节奏</p>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {SRS_LABELS.map((label) => (
-                <span
-                  key={label}
-                  className="rounded-full border border-white/70 bg-white/40 px-2.5 py-1 text-[11px] text-slate-600"
-                >
-                  {label}
-                </span>
-              ))}
-            </div>
-            <p className="mt-3 text-xs leading-relaxed text-slate-500">
-              新词可标不认识、模糊或认识：不认识马上复习，模糊约 30 分钟，认识约
-              1 天。复习答对进入下一档，答错回退一档。进度保存在本机。
-            </p>
-          </GlassPanel>
-        </div>
+          </div>
+          <button
+            type="button"
+            disabled={dueIds.length === 0}
+            onClick={() => setView("review")}
+            className="mt-4 h-12 w-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 text-sm font-medium text-white shadow-lg shadow-violet-500/20 disabled:opacity-40"
+          >
+            <RotateCcw className="mr-1 inline size-4" />
+            开始复习
+          </button>
+        </GlassPanel>
       </div>
 
-      <button
-        type="button"
-        className="self-center text-xs text-slate-400 underline-offset-4 transition hover:text-slate-600 hover:underline lg:hidden"
-        onClick={() => {
-          if (window.confirm("确定清空本机学习进度？词库不会被删除。")) {
-            resetProgress()
-          }
-        }}
-      >
-        重置学习进度
-      </button>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <GlassPanel className="p-4 sm:p-5">
+          <div className="mb-3 flex items-baseline justify-between">
+            <p className="text-sm font-medium text-slate-800">最近七天</p>
+            <p className="text-xs text-slate-400">连续学习 {state.streak} 天</p>
+          </div>
+          <div className="grid grid-cols-7 gap-1.5">
+            {days.map((day) => {
+              const key = dateKey(day)
+              const count = state.dailyCounts?.[key] ?? 0
+              const isToday = key === today
+              return (
+                <div
+                  key={key}
+                  className={cn(
+                    "rounded-2xl px-1 py-2 text-center",
+                    isToday ? "bg-white ring-2 ring-violet-400" : "bg-white/50"
+                  )}
+                >
+                  <p className="text-[10px] text-slate-400">
+                    {day.getMonth() + 1}/{day.getDate()}
+                  </p>
+                  <p className="mt-1 text-xs font-medium text-slate-700">
+                    {count} 次
+                  </p>
+                  <span
+                    className={cn(
+                      "mx-auto mt-1 block size-1.5 rounded-full",
+                      count > 0 ? "bg-violet-500" : "bg-slate-200"
+                    )}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </GlassPanel>
+
+        <GlassPanel className="p-4 sm:p-5">
+          <p className="text-sm font-medium text-slate-800">艾宾浩斯复习节奏</p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-500">
+            每个新词学完后，按下列节点自动安排复习；答错的词重新开始这个循环。
+          </p>
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {SRS_LABELS.map((label) => (
+              <span
+                key={label}
+                className="rounded-full bg-white/70 px-2.5 py-1 text-[11px] text-slate-600 ring-1 ring-white"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        </GlassPanel>
+      </div>
     </div>
   )
 }
 
-function StatCard({
-  label,
-  value,
-  hint,
-  icon,
-}: {
-  label: string
-  value: string
-  hint: string
-  icon?: ReactNode
-}) {
+function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <GlassPanel hover className="flex flex-col gap-1 p-3.5 sm:p-4">
-      <p className="flex items-center gap-1 text-[11px] tracking-wide text-slate-500">
-        {icon}
-        {label}
-      </p>
-      <p
-        className={cn(
-          "font-serif text-2xl tracking-tight text-slate-900 sm:text-[1.7rem]"
-        )}
-      >
-        {value}
-      </p>
-      <p className="text-[11px] leading-snug text-slate-400">{hint}</p>
-    </GlassPanel>
+    <div>
+      <p className="font-serif text-xl text-slate-900 tabular-nums">{value}</p>
+      <p className="text-[11px] text-slate-400">{label}</p>
+    </div>
+  )
+}
+
+function ProgressRing({
+  value,
+  done,
+  goal,
+}: {
+  value: number
+  done: number
+  goal: number
+}) {
+  const radius = 36
+  const circ = 2 * Math.PI * radius
+  const offset = circ * (1 - Math.min(1, Math.max(0, value)))
+  return (
+    <div className="relative size-28 shrink-0">
+      <svg viewBox="0 0 88 88" className="size-full -rotate-90">
+        <circle
+          cx="44"
+          cy="44"
+          r={radius}
+          fill="none"
+          stroke="#e2e8f0"
+          strokeWidth="7"
+        />
+        <circle
+          cx="44"
+          cy="44"
+          r={radius}
+          fill="none"
+          stroke="#7c3aed"
+          strokeWidth="7"
+          strokeLinecap="round"
+          strokeDasharray={circ}
+          strokeDashoffset={offset}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <p className="font-serif text-2xl leading-none text-slate-900 tabular-nums">
+          {done}
+        </p>
+        <p className="text-[11px] text-slate-400">/{goal}</p>
+        <p className="text-[10px] text-slate-400">今日新词</p>
+      </div>
+    </div>
   )
 }

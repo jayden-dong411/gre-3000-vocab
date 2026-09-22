@@ -17,6 +17,7 @@ import {
   dueCardIds,
   ensureTodayQueue,
   loadState,
+  noteActivity,
   saveState,
   touchStreak,
 } from "@/lib/storage"
@@ -105,12 +106,15 @@ export function useVocabEngine() {
         ? state.todayNewDone
         : [...state.todayNewDone, id]
       persist(
-        touchStreak({
-          ...state,
-          introduced,
-          todayNewDone,
-          cards: { ...state.cards, [id]: card },
-        })
+        noteActivity(
+          touchStreak({
+            ...state,
+            introduced,
+            todayNewDone,
+            cards: { ...state.cards, [id]: card },
+          }),
+          "learn"
+        )
       )
     },
     [persist, state]
@@ -137,10 +141,14 @@ export function useVocabEngine() {
         known: correct ? existing.known : false,
       }
       persist(
-        touchStreak({
-          ...state,
-          cards: { ...state.cards, [id]: card },
-        })
+        noteActivity(
+          touchStreak({
+            ...state,
+            cards: { ...state.cards, [id]: card },
+          }),
+          "review",
+          correct
+        )
       )
     },
     [persist, state]

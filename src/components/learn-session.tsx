@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react"
-import { Check, CircleDashed, RotateCcw, X } from "lucide-react"
+import { useEffect, useMemo, type ReactNode } from "react"
+import { Check, CircleDashed, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { GlassPanel } from "@/components/glass"
 import { SessionHeader } from "@/components/session-header"
@@ -19,18 +19,10 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
     [state.todayNewDone, state.todayNewIds, wordMap]
   )
   const current = queue[0]
-  const [flipWordId, setFlipWordId] = useState<string | null>(null)
-  const flipped = Boolean(current && flipWordId === current.id)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return
-      if (e.key === " " || e.key === "Enter") {
-        e.preventDefault()
-        if (!current) return
-        setFlipWordId((id) => (id === current.id ? null : current.id))
-        return
-      }
       if (!current) return
       if (e.key === "1" || e.key.toLowerCase() === "x") {
         markNewWord(current.id, "unknown")
@@ -83,193 +75,77 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
     <div className="lg:flex lg:h-full lg:min-h-0 lg:flex-1 lg:flex-col">
       <SessionHeader
         title="今日新词"
-        subtitle="点卡片或空格翻转 · 1 不认识 · 2 模糊 · 3 认识"
+        subtitle="1 不认识 · 2 模糊 · 3 认识"
         progress={{ current: todayDone, total: todayTotal }}
         onBack={() => setView("home")}
       />
 
-      <div className="flip-scene mx-auto h-[min(440px,62dvh)] w-full lg:hidden">
-        <div
-          role="button"
-          tabIndex={0}
-          className={cn("flip-card", flipped && "is-flipped")}
-          onClick={() => {
-            if (!current) return
-            setFlipWordId((id) => (id === current.id ? null : current.id))
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && current) {
-              setFlipWordId((id) => (id === current.id ? null : current.id))
-            }
-          }}
-          aria-label={flipped ? "显示单词" : "显示释义"}
-        >
-          <div className="flip-face">
-            <div className="flip-sheet items-center justify-center px-6 py-8 text-center">
-              <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
-                New word
-              </p>
-              <h2 className="mt-3 font-serif text-4xl tracking-tight text-slate-900 sm:text-5xl">
-                {current.word}
-              </h2>
-              <p className="mt-3 font-mono text-sm text-slate-500 sm:text-base">
-                {current.phonetic || "暂无音标"}
-              </p>
-              <div className="mt-5">
-                <SpeakButton text={current.word} />
-              </div>
-              <p className="mt-8 text-xs text-slate-400">
-                点击卡片查看释义与例句
-              </p>
-            </div>
-          </div>
-          <div className="flip-face flip-back">
-            <div className="flip-sheet px-5 py-6 sm:px-7">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="font-serif text-2xl text-slate-900">
-                    {current.word}
-                  </h2>
-                  <p className="mt-1 font-mono text-xs text-slate-500">
-                    {current.phonetic}
-                  </p>
-                </div>
-                <SpeakButton text={current.word} />
-              </div>
-              <p className="mt-4 text-lg leading-snug font-medium text-slate-900">
-                {current.meaningZh}
-              </p>
-              {current.meaningEn ? (
-                <p className="mt-2 text-sm leading-relaxed text-slate-500">
-                  {current.meaningEn}
-                </p>
-              ) : null}
-              {current.exampleEn ? (
-                <figure className="mt-5 rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-3 text-left">
-                  <blockquote className="text-sm leading-relaxed text-slate-700">
-                    {current.exampleEn}
-                  </blockquote>
-                  {current.exampleZh ? (
-                    <figcaption className="mt-2 text-xs leading-relaxed text-slate-500">
-                      {current.exampleZh}
-                    </figcaption>
-                  ) : null}
-                </figure>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="hidden min-h-0 flex-1 flex-col gap-3 lg:flex">
-        <div
-          className="flex min-h-44 flex-1 cursor-pointer flex-col items-center justify-center rounded-3xl border border-white/80 bg-white/94 px-8 py-8 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
-          onClick={() =>
-            setFlipWordId((id) => (id === current.id ? null : current.id))
-          }
-        >
+      <div className="flex min-h-0 flex-1 flex-col gap-3">
+        <div className="flex min-h-40 flex-1 flex-col items-center justify-center rounded-3xl border border-white/80 bg-white/94 px-6 py-8 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]">
           <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
             New word
           </p>
-          <h2 className="mt-4 max-w-full font-serif text-6xl tracking-tight text-slate-900 xl:text-7xl">
+          <h2 className="mt-3 max-w-full font-serif text-5xl tracking-tight text-slate-900 sm:text-6xl">
             {current.word}
           </h2>
           <p className="mt-3 font-mono text-base text-slate-500">
             {current.phonetic || "暂无音标"}
           </p>
-          <div className="mt-5">
+          <div className="mt-4">
             <SpeakButton text={current.word} />
           </div>
         </div>
-        <div
-          role="button"
-          tabIndex={0}
-          className="flex min-h-44 flex-1 cursor-pointer flex-col overflow-hidden rounded-3xl border border-white/80 bg-white/94 text-left shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
-          onClick={() =>
-            setFlipWordId((id) => (id === current.id ? null : current.id))
-          }
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              setFlipWordId((id) => (id === current.id ? null : current.id))
-            }
-          }}
-          aria-label={flipped ? "隐藏释义" : "显示释义"}
-        >
-          {flipped ? (
-            <div className="min-h-0 flex-1 overflow-auto px-7 py-6">
-              <p className="text-[11px] tracking-[0.18em] text-slate-400 uppercase">
-                释义
-              </p>
-              <p className="mt-3 text-3xl leading-snug font-medium text-slate-900">
-                {current.meaningZh}
-              </p>
-              {current.meaningEn ? (
-                <p className="mt-2 text-sm leading-relaxed text-slate-500">
-                  {current.meaningEn}
-                </p>
+
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+          <RatingButton
+            tone="unknown"
+            label="不认识"
+            hint="马上复习"
+            icon={<X className="size-5" />}
+            onClick={() => markNewWord(current.id, "unknown")}
+          />
+          <RatingButton
+            tone="fuzzy"
+            label="模糊"
+            hint="约 30 分钟"
+            icon={<CircleDashed className="size-5" />}
+            onClick={() => markNewWord(current.id, "fuzzy")}
+          />
+          <RatingButton
+            tone="known"
+            label="认识"
+            hint="约 1 天后"
+            icon={<Check className="size-5" />}
+            onClick={() => markNewWord(current.id, "known")}
+          />
+        </div>
+
+        <div className="flex min-h-40 flex-1 flex-col items-center justify-center overflow-auto rounded-3xl border border-white/80 bg-white/94 px-6 py-8 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]">
+          <p className="text-[11px] tracking-[0.18em] text-slate-400 uppercase">
+            释义
+          </p>
+          <p className="mt-3 text-2xl leading-snug font-medium text-slate-900 sm:text-3xl">
+            {current.meaningZh || "暂无释义"}
+          </p>
+          {current.meaningEn ? (
+            <p className="mt-2 max-w-xl text-base leading-relaxed text-slate-500">
+              {current.meaningEn}
+            </p>
+          ) : null}
+          {current.exampleEn ? (
+            <figure className="mt-5 w-full max-w-xl rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-4">
+              <blockquote className="text-lg leading-relaxed text-slate-800">
+                {current.exampleEn}
+              </blockquote>
+              {current.exampleZh ? (
+                <figcaption className="mt-2 text-base leading-relaxed text-slate-500">
+                  {current.exampleZh}
+                </figcaption>
               ) : null}
-              {current.exampleEn ? (
-                <figure className="mt-5 rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-3">
-                  <blockquote className="text-sm leading-relaxed text-slate-700">
-                    {current.exampleEn}
-                  </blockquote>
-                  {current.exampleZh ? (
-                    <figcaption className="mt-2 text-xs leading-relaxed text-slate-500">
-                      {current.exampleZh}
-                    </figcaption>
-                  ) : null}
-                </figure>
-              ) : null}
-            </div>
-          ) : (
-            <div className="flex h-full flex-col justify-center px-7">
-              <p className="font-serif text-xl text-slate-800">
-                空格或点击显示
-              </p>
-              <ul className="mt-4 space-y-2 text-sm text-slate-500">
-                <li>中文释义</li>
-                <li>英文解释</li>
-                <li>例句</li>
-              </ul>
-            </div>
-          )}
+            </figure>
+          ) : null}
         </div>
       </div>
-
-      <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3 lg:mt-4">
-        <RatingButton
-          tone="unknown"
-          label="不认识"
-          hint="马上复习"
-          icon={<X className="size-4" />}
-          onClick={() => markNewWord(current.id, "unknown")}
-        />
-        <RatingButton
-          tone="fuzzy"
-          label="模糊"
-          hint="约 30 分钟"
-          icon={<CircleDashed className="size-4" />}
-          onClick={() => markNewWord(current.id, "fuzzy")}
-        />
-        <RatingButton
-          tone="known"
-          label="认识"
-          hint="约 1 天后"
-          icon={<Check className="size-4" />}
-          onClick={() => markNewWord(current.id, "known")}
-        />
-      </div>
-      <button
-        type="button"
-        className="mx-auto mt-4 flex items-center gap-1 text-xs text-slate-400 lg:hidden"
-        onClick={() => {
-          if (!current) return
-          setFlipWordId((id) => (id === current.id ? null : current.id))
-        }}
-      >
-        <RotateCcw className="size-3" />
-        {flipped ? "回到单词" : "翻转看释义"}
-      </button>
     </div>
   )
 }
@@ -292,23 +168,23 @@ function RatingButton({
       type="button"
       variant="outline"
       className={cn(
-        "h-14 flex-col gap-0.5 rounded-2xl px-1 text-sm shadow-none active:translate-y-px sm:h-16 lg:h-12 lg:flex-row lg:gap-2 lg:text-base",
+        "h-16 flex-col gap-0.5 rounded-2xl px-2 text-base shadow-none active:translate-y-px sm:h-20",
         tone === "unknown" &&
-          "border-rose-200/80 bg-rose-50/70 text-rose-700 hover:bg-rose-50",
+          "border-rose-200/80 bg-rose-50/80 text-rose-700 hover:bg-rose-50",
         tone === "fuzzy" &&
-          "border-amber-200/90 bg-amber-50/80 text-amber-800 hover:bg-amber-50",
+          "border-amber-200/90 bg-amber-50/90 text-amber-800 hover:bg-amber-50",
         tone === "known" &&
           "border-emerald-200/80 bg-emerald-600 text-white hover:bg-emerald-500"
       )}
       onClick={onClick}
     >
-      <span className="inline-flex items-center gap-1">
+      <span className="inline-flex items-center gap-1.5">
         {icon}
         {label}
       </span>
       <span
         className={cn(
-          "text-[10px] font-normal",
+          "text-xs font-normal",
           tone === "known" ? "text-emerald-50" : "opacity-70"
         )}
       >

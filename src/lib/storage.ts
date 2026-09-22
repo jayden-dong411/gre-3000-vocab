@@ -15,6 +15,9 @@ export function defaultState(now = new Date()): AppState {
     todayDate: dateKey(now),
     todayNewIds: [],
     todayNewDone: [],
+    todayCorrect: 0,
+    todayWrong: 0,
+    dailyCounts: {},
     introduced: [],
     cards: {},
   }
@@ -35,6 +38,9 @@ export function loadState(): AppState {
       introduced: parsed.introduced ?? [],
       todayNewIds: parsed.todayNewIds ?? [],
       todayNewDone: parsed.todayNewDone ?? [],
+      todayCorrect: parsed.todayCorrect ?? 0,
+      todayWrong: parsed.todayWrong ?? 0,
+      dailyCounts: parsed.dailyCounts ?? {},
     }
   } catch {
     return defaultState()
@@ -60,6 +66,8 @@ export function ensureTodayQueue(state: AppState, words: Word[]): AppState {
       todayDate: today,
       todayNewIds: [],
       todayNewDone: [],
+      todayCorrect: 0,
+      todayWrong: 0,
     }
   }
 
@@ -96,7 +104,7 @@ function yesterdayKeyFromKey(key: string): string {
 
 export function dueCardIds(
   cards: Record<string, WordCard>,
-  now = Date.now(),
+  now = Date.now()
 ): string[] {
   const ids: string[] = []
   for (const [id, card] of Object.entries(cards)) {
@@ -108,4 +116,34 @@ export function dueCardIds(
 
 export function learnedCount(state: AppState): number {
   return state.introduced.length
+}
+
+export function noteActivity(
+  state: AppState,
+  kind: "learn" | "review",
+  correct = false
+): AppState {
+  const today = dateKey()
+  const dailyCounts = pruneCounts(state.dailyCounts ?? {}, today)
+  dailyCounts[today] = (dailyCounts[today] ?? 0) + 1
+  const sameDay = state.todayDate === today
+  const todayCorrect =
+    (sameDay ? state.todayCorrect : 0) + (kind === "review" && correct ? 1 : 0)
+  const todayWrong =
+    (sameDay ? state.todayWrong : 0) + (kind === "review" && !correct ? 1 : 0)
+  return { ...state, dailyCounts, todayCorrect, todayWrong }
+}
+
+function pruneCounts(
+  counts: Record<string, number>,
+  today: string
+): Record<string, number> {
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - 21)
+  const min = dateKey(cutoff)
+  const next: Record<string, number> = {}
+  for (const [key, value] of Object.entries(counts)) {
+    if (key >= min && key <= today) next[key] = value
+  }
+  return next
 }
