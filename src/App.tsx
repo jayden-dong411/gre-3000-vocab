@@ -38,7 +38,7 @@ export function App() {
         <div
           className={
             learnWithReview
-              ? "grid min-h-0 flex-1 grid-cols-[minmax(0,1.65fr)_minmax(20rem,0.78fr)] gap-4"
+              ? "grid min-h-0 flex-1 grid-cols-[minmax(0,1.15fr)_minmax(26rem,1fr)] gap-4"
               : "min-h-0 flex-1 overflow-y-auto"
           }
         >

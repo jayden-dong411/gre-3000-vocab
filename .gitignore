@@ -32,3 +32,6 @@ uploads/
 # PWA / Vite
 dev-dist/
 .vercel
+
+# Desktop bundles
+release/

@@ -157,26 +157,20 @@ export function ReviewSession({
 
       <div
         className={cn(
-          embedded
-            ? "flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto"
-            : "lg:grid lg:grid-cols-[minmax(14rem,0.72fr)_minmax(0,1.28fr)] lg:items-center lg:gap-4"
+          "flex min-h-0 flex-col gap-3",
+          embedded && "flex-1 overflow-y-auto"
         )}
       >
         <GlassPanel
           className={cn(
-            "flex flex-col items-center justify-center px-5 py-8 text-center sm:px-6",
-            embedded && "py-6"
+            "flex flex-col items-center justify-center px-6 py-8 text-center",
+            embedded ? "min-h-48 flex-1" : "min-h-56"
           )}
         >
           <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
             选择正确释义
           </p>
-          <h2
-            className={cn(
-              "mt-3 font-serif text-4xl tracking-tight text-slate-900 sm:text-5xl",
-              embedded && "text-3xl sm:text-4xl"
-            )}
-          >
+          <h2 className="mt-3 max-w-full font-serif text-5xl tracking-tight text-slate-900 sm:text-6xl">
             {current.word}
           </h2>
           <div className="mt-3 flex items-center justify-center gap-2">
@@ -187,12 +181,7 @@ export function ReviewSession({
           </div>
         </GlassPanel>
 
-        <div
-          className={cn(
-            "mt-4 grid gap-2.5",
-            !embedded && "lg:mt-0 lg:grid-cols-2"
-          )}
-        >
+        <div className="grid grid-cols-1 gap-2.5">
           {choices.map((choice, i) => {
             const selected = picked === choice.id
             const show = phase === "feedback"
@@ -204,7 +193,7 @@ export function ReviewSession({
                 disabled={phase === "feedback"}
                 onClick={() => select(choice)}
                 className={cn(
-                  "rounded-2xl border px-4 py-3.5 text-left text-[15px] leading-snug transition-all active:translate-y-px disabled:cursor-default lg:min-h-16 lg:px-5 lg:py-4 lg:text-base",
+                  "min-h-14 rounded-2xl border px-5 py-4 text-left text-base leading-snug transition-all active:translate-y-px disabled:cursor-default sm:min-h-16",
                   "border-white/70 bg-white/50 backdrop-blur-xl hover:bg-white/80",
                   show &&
                     isRight &&
@@ -225,7 +214,7 @@ export function ReviewSession({
         </div>
 
         {phase === "feedback" ? (
-          <GlassPanel className="mt-4 px-5 py-4 lg:col-span-2 lg:mt-0">
+          <GlassPanel className="px-5 py-4">
             <div className="flex items-start gap-3">
               <div
                 className={cn(
