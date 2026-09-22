@@ -145,12 +145,18 @@
 }
 
 .gloss-body {
-  padding-top: 0.85rem;
+  padding-top: 0.55rem;
   opacity: 0;
   transform: translateY(-6px);
   transition:
     opacity 0.32s ease,
     transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (min-width: 640px) {
+  .gloss-body {
+    padding-top: 0.85rem;
+  }
 }
 
 .gloss-body.is-open {

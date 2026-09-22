@@ -152,7 +152,7 @@ export function ReviewSession({
   const nextLabel = card ? SRS_LABELS[card.stage] : ""
 
   return (
-    <div className={cn(embedded && "flex h-full min-h-0 flex-col")}>
+    <div className={cn("min-h-0", embedded ? "flex h-full flex-col" : "flex min-h-0 flex-1 flex-col")}>
       {embedded ? (
         <div className="mb-3 flex items-baseline justify-between gap-3">
           <p className="text-sm font-medium text-slate-800">复习</p>
@@ -172,31 +172,31 @@ export function ReviewSession({
 
       <div
         className={cn(
-          "flex min-h-0 flex-col gap-3",
-          embedded && "flex-1 overflow-y-auto"
+          "flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto sm:gap-3",
+          !embedded && "pb-1"
         )}
       >
         <GlassPanel
           className={cn(
-            "flex flex-col items-center justify-center px-6 py-8 text-center",
-            embedded ? "min-h-48 flex-1" : "min-h-56"
+            "flex flex-col items-center justify-center px-4 py-5 text-center sm:px-6 sm:py-8",
+            embedded ? "min-h-36 flex-1 sm:min-h-48" : "min-h-0"
           )}
         >
-          <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
+          <p className="text-[10px] tracking-[0.18em] text-slate-400 uppercase sm:text-[11px] sm:tracking-[0.22em]">
             选择正确释义
           </p>
-          <h2 className="mt-3 max-w-full font-serif text-5xl tracking-tight text-slate-900 sm:text-6xl">
+          <h2 className="mt-2 max-w-full font-serif text-3xl tracking-tight text-slate-900 sm:mt-3 sm:text-5xl md:text-6xl">
             {current.word}
           </h2>
-          <div className="mt-3 flex items-center justify-center gap-2">
-            <p className="font-mono text-sm text-slate-500">
+          <div className="mt-2 flex items-center justify-center gap-2 sm:mt-3">
+            <p className="font-mono text-xs text-slate-500 sm:text-sm">
               {current.phonetic}
             </p>
             <SpeakButton text={current.word} />
           </div>
         </GlassPanel>
 
-        <div className="grid grid-cols-1 gap-2.5">
+        <div className="grid grid-cols-1 gap-1.5 sm:gap-2.5">
           {choices.map((choice, i) => {
             const selected = picked === choice.id
             const show = phase === "feedback"
@@ -208,7 +208,7 @@ export function ReviewSession({
                 disabled={phase === "feedback"}
                 onClick={() => select(choice)}
                 className={cn(
-                  "min-h-14 rounded-2xl border px-5 py-4 text-left text-base leading-snug transition-all active:translate-y-px disabled:cursor-default sm:min-h-16",
+                  "min-h-11 rounded-xl border px-3.5 py-2.5 text-left text-sm leading-snug transition-all active:translate-y-px disabled:cursor-default sm:min-h-16 sm:rounded-2xl sm:px-5 sm:py-4 sm:text-base",
                   "border-white/70 bg-white/50 backdrop-blur-xl hover:bg-white/80",
                   show &&
                     isRight &&
@@ -219,7 +219,7 @@ export function ReviewSession({
                     "border-rose-300 bg-rose-50/80 text-rose-800"
                 )}
               >
-                <span className="mr-2 font-mono text-xs text-slate-400">
+                <span className="mr-2 font-mono text-[10px] text-slate-400 sm:text-xs">
                   {i + 1}
                 </span>
                 {choice.label}
@@ -229,20 +229,20 @@ export function ReviewSession({
         </div>
 
         {phase === "feedback" ? (
-          <GlassPanel className="px-5 py-4">
-            <div className="flex items-start gap-3">
+          <GlassPanel className="sticky bottom-0 z-10 px-4 py-3 sm:static sm:px-5 sm:py-4">
+            <div className="flex items-start gap-2.5 sm:gap-3">
               <div
                 className={cn(
-                  "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full",
+                  "mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full sm:size-8",
                   wasCorrect
                     ? "bg-emerald-100 text-emerald-700"
                     : "bg-rose-100 text-rose-700"
                 )}
               >
                 {wasCorrect ? (
-                  <Check className="size-4" />
+                  <Check className="size-3.5 sm:size-4" />
                 ) : (
-                  <X className="size-4" />
+                  <X className="size-3.5 sm:size-4" />
                 )}
               </div>
               <div className="min-w-0 flex-1">
@@ -250,11 +250,11 @@ export function ReviewSession({
                   {wasCorrect ? "答对了" : "答错了"}
                   {nextLabel ? ` · 下次约 ${nextLabel} 后` : ""}
                 </p>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-0.5 text-sm text-slate-600 sm:mt-1">
                   {current.word}：{correctChoice?.label}
                 </p>
                 {current.exampleEn ? (
-                  <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                  <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-slate-500 sm:mt-2 sm:line-clamp-none">
                     {current.exampleEn}
                     {current.exampleZh ? ` ${current.exampleZh}` : ""}
                   </p>
@@ -262,7 +262,7 @@ export function ReviewSession({
               </div>
             </div>
             <Button
-              className="mt-4 h-11 w-full rounded-xl bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50"
+              className="mt-3 h-10 w-full rounded-xl bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50 sm:mt-4 sm:h-11"
               disabled={!nextReady}
               onClick={goNext}
             >

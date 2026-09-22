@@ -58,8 +58,10 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
           progress={{ current: todayDone, total: todayTotal }}
           onBack={() => setView("home")}
         />
-        <GlassPanel className="px-6 py-12 text-center">
-          <p className="font-serif text-2xl text-slate-900">今日新词已完成</p>
+        <GlassPanel className="px-5 py-10 text-center sm:px-6 sm:py-12">
+          <p className="font-serif text-xl text-slate-900 sm:text-2xl">
+            今日新词已完成
+          </p>
           <p className="mt-2 text-sm text-slate-500">
             不认识的词可以马上复习；标成模糊的词大约 30 分钟后再出现。
           </p>
@@ -84,7 +86,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
   }
 
   return (
-    <div className="lg:flex lg:h-full lg:min-h-0 lg:flex-1 lg:flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
       <SessionHeader
         title="今日新词"
         subtitle="空格展开释义 · 1 不认识 · 2 模糊 · 3 认识"
@@ -92,53 +94,53 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         onBack={() => setView("home")}
       />
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto pb-2 sm:gap-3">
         <div
           key={current.id}
-          className="word-rise flex flex-col items-center justify-center rounded-3xl border border-white/80 bg-white/94 px-6 py-8 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
+          className="word-rise flex flex-col items-center justify-center rounded-2xl border border-white/80 bg-white/94 px-4 py-5 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)] sm:rounded-3xl sm:px-6 sm:py-8"
         >
-          <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
+          <p className="text-[10px] tracking-[0.18em] text-slate-400 uppercase sm:text-[11px] sm:tracking-[0.22em]">
             New word
           </p>
-          <h2 className="mt-3 max-w-full font-serif text-5xl tracking-tight text-slate-900 sm:text-6xl">
+          <h2 className="mt-2 max-w-full font-serif text-3xl tracking-tight text-slate-900 sm:mt-3 sm:text-5xl md:text-6xl">
             {current.word}
           </h2>
-          <p className="mt-3 font-mono text-base text-slate-500">
+          <p className="mt-2 font-mono text-sm text-slate-500 sm:mt-3 sm:text-base">
             {current.phonetic || "暂无音标"}
           </p>
-          <div className="mt-4">
+          <div className="mt-3 sm:mt-4">
             <SpeakButton text={current.word} />
           </div>
         </div>
 
         <button
           type="button"
-          className="w-full rounded-3xl border border-white/80 bg-white/94 px-6 py-5 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
+          className="w-full rounded-2xl border border-white/80 bg-white/94 px-4 py-3.5 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)] sm:rounded-3xl sm:px-6 sm:py-5"
           onClick={toggleReveal}
           aria-expanded={revealed}
           aria-label={revealed ? "收起释义" : "展开释义"}
         >
-          <p className="text-[11px] tracking-[0.18em] text-slate-400 uppercase">
+          <p className="text-[10px] tracking-[0.16em] text-slate-400 uppercase sm:text-[11px] sm:tracking-[0.18em]">
             释义
           </p>
           <div className={cn("gloss-fold", revealed && "is-open")}>
             <div className="min-h-0 overflow-hidden">
               <div className={cn("gloss-body", revealed && "is-open")}>
-                <p className="text-2xl leading-snug font-medium text-slate-900 sm:text-3xl">
+                <p className="text-lg leading-snug font-medium text-slate-900 sm:text-2xl md:text-3xl">
                   {current.meaningZh || "暂无释义"}
                 </p>
                 {current.meaningEn ? (
-                  <p className="mt-2 text-base leading-relaxed text-slate-500">
+                  <p className="mt-1.5 text-sm leading-relaxed text-slate-500 sm:mt-2 sm:text-base">
                     {current.meaningEn}
                   </p>
                 ) : null}
                 {current.exampleEn ? (
-                  <figure className="mt-4 w-full rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-4">
-                    <blockquote className="text-lg leading-relaxed text-slate-800">
+                  <figure className="mt-3 w-full rounded-xl border border-slate-200/80 bg-slate-50/80 px-3 py-3 sm:mt-4 sm:rounded-2xl sm:px-4 sm:py-4">
+                    <blockquote className="text-sm leading-relaxed text-slate-800 sm:text-lg">
                       {current.exampleEn}
                     </blockquote>
                     {current.exampleZh ? (
-                      <figcaption className="mt-2 text-base leading-relaxed text-slate-500">
+                      <figcaption className="mt-1.5 text-sm leading-relaxed text-slate-500 sm:mt-2 sm:text-base">
                         {current.exampleZh}
                       </figcaption>
                     ) : null}
@@ -147,34 +149,34 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
               </div>
             </div>
           </div>
-          <p className="mt-2 text-sm text-slate-500">
-            {revealed ? "点击收起" : "点击这里，或按空格展开"}
+          <p className="mt-1.5 text-xs text-slate-500 sm:mt-2 sm:text-sm">
+            {revealed ? "点击收起" : "点击或按空格展开"}
           </p>
         </button>
+      </div>
 
-        <div className="grid grid-cols-3 gap-2 sm:gap-3">
-          <RatingButton
-            tone="unknown"
-            label="不认识"
-            hint="马上复习"
-            icon={<X className="size-5" />}
-            onClick={() => markNewWord(current.id, "unknown")}
-          />
-          <RatingButton
-            tone="fuzzy"
-            label="模糊"
-            hint="约 30 分钟"
-            icon={<CircleDashed className="size-5" />}
-            onClick={() => markNewWord(current.id, "fuzzy")}
-          />
-          <RatingButton
-            tone="known"
-            label="认识"
-            hint="约 1 天后"
-            icon={<Check className="size-5" />}
-            onClick={() => markNewWord(current.id, "known")}
-          />
-        </div>
+      <div className="-mx-1 mt-2 grid shrink-0 grid-cols-3 gap-1.5 pt-1 pb-1 sm:mx-0 sm:mt-3 sm:gap-3 sm:pt-0 sm:pb-0">
+        <RatingButton
+          tone="unknown"
+          label="不认识"
+          hint="马上复习"
+          icon={<X className="size-4 sm:size-5" />}
+          onClick={() => markNewWord(current.id, "unknown")}
+        />
+        <RatingButton
+          tone="fuzzy"
+          label="模糊"
+          hint="约 30 分钟"
+          icon={<CircleDashed className="size-4 sm:size-5" />}
+          onClick={() => markNewWord(current.id, "fuzzy")}
+        />
+        <RatingButton
+          tone="known"
+          label="认识"
+          hint="约 1 天后"
+          icon={<Check className="size-4 sm:size-5" />}
+          onClick={() => markNewWord(current.id, "known")}
+        />
       </div>
     </div>
   )
@@ -198,7 +200,7 @@ function RatingButton({
       type="button"
       variant="outline"
       className={cn(
-        "h-16 flex-col gap-0.5 rounded-2xl px-2 text-base shadow-none transition duration-200 hover:-translate-y-0.5 active:translate-y-px sm:h-20",
+        "h-14 flex-col gap-0 rounded-xl px-1.5 text-sm shadow-none transition duration-200 hover:-translate-y-0.5 active:translate-y-px sm:h-20 sm:gap-0.5 sm:rounded-2xl sm:px-2 sm:text-base",
         tone === "unknown" &&
           "border-rose-200/80 bg-rose-50/80 text-rose-700 hover:bg-rose-50",
         tone === "fuzzy" &&
@@ -208,13 +210,13 @@ function RatingButton({
       )}
       onClick={onClick}
     >
-      <span className="inline-flex items-center gap-1.5">
+      <span className="inline-flex items-center gap-1 sm:gap-1.5">
         {icon}
         {label}
       </span>
       <span
         className={cn(
-          "text-xs font-normal",
+          "text-[10px] font-normal sm:text-xs",
           tone === "known" ? "text-emerald-50" : "opacity-70"
         )}
       >

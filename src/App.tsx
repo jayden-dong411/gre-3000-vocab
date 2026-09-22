@@ -14,15 +14,23 @@ export function App() {
   return (
     <div className="relative min-h-svh text-slate-800 lg:h-svh lg:overflow-hidden">
       <AmbientBackground />
-      <main className="relative mx-auto flex w-full max-w-5xl flex-col px-4 pt-5 pb-28 sm:px-6 lg:h-full lg:min-h-0 lg:px-8 lg:pt-6 lg:pb-24">
+      <main className="relative mx-auto flex w-full max-w-5xl flex-col px-4 pt-4 pb-24 sm:px-6 sm:pt-5 sm:pb-28 lg:h-full lg:min-h-0 lg:px-8 lg:pt-6 lg:pb-24">
         {engine.status === "ready" ? <AppHeader engine={engine} /> : null}
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div
+          className={
+            engine.view === "learn" || engine.view === "review"
+              ? "flex min-h-0 flex-1 flex-col overflow-hidden"
+              : "min-h-0 flex-1 overflow-y-auto"
+          }
+        >
           <div
             key={engine.view}
             className={
               engine.view === "learn"
-                ? "view-rise mx-auto w-full max-w-2xl"
-                : "view-rise"
+                ? "view-rise mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col"
+                : engine.view === "review"
+                  ? "view-rise flex min-h-0 flex-1 flex-col overflow-y-auto"
+                  : "view-rise"
             }
           >
             {engine.status === "ready" && engine.view === "home" ? (
