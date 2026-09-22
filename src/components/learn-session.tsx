@@ -87,15 +87,15 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
     <div className="lg:flex lg:h-full lg:min-h-0 lg:flex-1 lg:flex-col">
       <SessionHeader
         title="今日新词"
-        subtitle="空格查看释义 · 1 不认识 · 2 模糊 · 3 认识"
+        subtitle="空格展开释义 · 1 不认识 · 2 模糊 · 3 认识"
         progress={{ current: todayDone, total: todayTotal }}
         onBack={() => setView("home")}
       />
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
         <div
           key={current.id}
-          className="word-rise flex min-h-40 flex-1 flex-col items-center justify-center rounded-3xl border border-white/80 bg-white/94 px-6 py-8 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
+          className="word-rise flex flex-col items-center justify-center rounded-3xl border border-white/80 bg-white/94 px-6 py-8 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
         >
           <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
             New word
@@ -110,6 +110,47 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
             <SpeakButton text={current.word} />
           </div>
         </div>
+
+        <button
+          type="button"
+          className="w-full rounded-3xl border border-white/80 bg-white/94 px-6 py-5 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
+          onClick={toggleReveal}
+          aria-expanded={revealed}
+          aria-label={revealed ? "收起释义" : "展开释义"}
+        >
+          <p className="text-[11px] tracking-[0.18em] text-slate-400 uppercase">
+            释义
+          </p>
+          <div className={cn("gloss-fold", revealed && "is-open")}>
+            <div className="min-h-0 overflow-hidden">
+              <div className={cn("gloss-body", revealed && "is-open")}>
+                <p className="text-2xl leading-snug font-medium text-slate-900 sm:text-3xl">
+                  {current.meaningZh || "暂无释义"}
+                </p>
+                {current.meaningEn ? (
+                  <p className="mt-2 text-base leading-relaxed text-slate-500">
+                    {current.meaningEn}
+                  </p>
+                ) : null}
+                {current.exampleEn ? (
+                  <figure className="mt-4 w-full rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-4">
+                    <blockquote className="text-lg leading-relaxed text-slate-800">
+                      {current.exampleEn}
+                    </blockquote>
+                    {current.exampleZh ? (
+                      <figcaption className="mt-2 text-base leading-relaxed text-slate-500">
+                        {current.exampleZh}
+                      </figcaption>
+                    ) : null}
+                  </figure>
+                ) : null}
+              </div>
+            </div>
+          </div>
+          <p className="mt-2 text-sm text-slate-500">
+            {revealed ? "点击收起" : "点击这里，或按空格展开"}
+          </p>
+        </button>
 
         <div className="grid grid-cols-3 gap-2 sm:gap-3">
           <RatingButton
@@ -133,55 +174,6 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
             icon={<Check className="size-5" />}
             onClick={() => markNewWord(current.id, "known")}
           />
-        </div>
-
-        <div className="flip-scene min-h-40 flex-1">
-          <div
-            role="button"
-            tabIndex={0}
-            className={cn("flip-card", revealed && "is-flipped")}
-            onClick={toggleReveal}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") toggleReveal()
-            }}
-            aria-label={revealed ? "隐藏释义" : "显示释义"}
-          >
-            <div className="flip-face">
-              <div className="flip-sheet items-center justify-center px-6 text-center">
-                <p className="font-serif text-2xl text-slate-800">释义先藏着</p>
-                <p className="hint-float mt-2 text-sm text-slate-500">
-                  点击这里，或按空格翻开
-                </p>
-              </div>
-            </div>
-            <div className="flip-face flip-back">
-              <div className="flip-sheet items-center justify-center overflow-auto px-6 py-6 text-center">
-                <p className="text-[11px] tracking-[0.18em] text-slate-400 uppercase">
-                  释义
-                </p>
-                <p className="mt-3 text-2xl leading-snug font-medium text-slate-900 sm:text-3xl">
-                  {current.meaningZh || "暂无释义"}
-                </p>
-                {current.meaningEn ? (
-                  <p className="mt-2 max-w-xl text-base leading-relaxed text-slate-500">
-                    {current.meaningEn}
-                  </p>
-                ) : null}
-                {current.exampleEn ? (
-                  <figure className="mt-5 w-full max-w-xl rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-4">
-                    <blockquote className="text-lg leading-relaxed text-slate-800">
-                      {current.exampleEn}
-                    </blockquote>
-                    {current.exampleZh ? (
-                      <figcaption className="mt-2 text-base leading-relaxed text-slate-500">
-                        {current.exampleZh}
-                      </figcaption>
-                    ) : null}
-                  </figure>
-                ) : null}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

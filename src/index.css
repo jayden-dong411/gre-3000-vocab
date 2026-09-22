@@ -134,49 +134,28 @@
     }
 }
 
-.flip-scene {
-  perspective: 1200px;
+.gloss-fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.flip-card {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  will-change: transform;
+.gloss-fold.is-open {
+  grid-template-rows: 1fr;
 }
 
-.flip-card.is-flipped {
-  transform: rotateY(180deg);
+.gloss-body {
+  padding-top: 0.85rem;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity 0.32s ease,
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.flip-face {
-  position: absolute;
-  inset: 0;
-  border-radius: 1.5rem;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.flip-back {
-  transform: rotateY(180deg);
-}
-
-.flip-sheet {
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  overflow: auto;
-  border-radius: inherit;
-  border: 1px solid rgb(255 255 255 / 0.82);
-  background-color: rgb(255 255 255 / 0.94);
-  box-shadow: 0 10px 28px rgb(15 23 42 / 0.06);
+.gloss-body.is-open {
+  opacity: 1;
+  transform: none;
 }
 
 @keyframes word-rise {
@@ -198,29 +177,15 @@
   animation: word-rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes hint-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(4px);
-  }
-}
-
-.hint-float {
-  animation: hint-float 1.6s ease-in-out infinite;
-}
-
 .ring-draw {
   transition: stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flip-card,
+  .gloss-fold,
+  .gloss-body,
   .word-rise,
   .view-rise,
-  .hint-float,
   .ring-draw {
     transition: none;
     animation: none;

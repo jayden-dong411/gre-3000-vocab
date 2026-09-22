@@ -60,6 +60,7 @@ function startServer() {
 
 async function createWindow() {
   const port = await startServer()
+  const iconPath = path.join(__dirname, "..", "build", "icon.png")
   const win = new BrowserWindow({
     width: 1440,
     height: 900,
@@ -69,6 +70,7 @@ async function createWindow() {
     backgroundColor: "#eef2f7",
     autoHideMenuBar: true,
     show: false,
+    icon: fs.existsSync(iconPath) ? iconPath : undefined,
   })
   win.once("ready-to-show", () => win.show())
   win.webContents.setWindowOpenHandler(({ url }) => {
