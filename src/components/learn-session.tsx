@@ -80,7 +80,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
   }
 
   return (
-    <div>
+    <div className="lg:flex lg:h-full lg:min-h-0 lg:flex-1 lg:flex-col">
       <SessionHeader
         title="今日新词"
         subtitle="点卡片或空格翻转 · 1 不认识 · 2 模糊 · 3 认识"
@@ -161,9 +161,9 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         </div>
       </div>
 
-      <div className="hidden grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] items-stretch gap-3 lg:grid">
+      <div className="hidden min-h-0 flex-1 flex-col gap-3 lg:flex">
         <div
-          className="flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-white/80 bg-white/94 px-8 py-8 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
+          className="flex min-h-44 flex-1 cursor-pointer flex-col items-center justify-center rounded-3xl border border-white/80 bg-white/94 px-8 py-8 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
           onClick={() =>
             setFlipWordId((id) => (id === current.id ? null : current.id))
           }
@@ -171,7 +171,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
           <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
             New word
           </p>
-          <h2 className="mt-4 max-w-full font-serif text-5xl tracking-tight text-slate-900 xl:text-6xl">
+          <h2 className="mt-4 max-w-full font-serif text-6xl tracking-tight text-slate-900 xl:text-7xl">
             {current.word}
           </h2>
           <p className="mt-3 font-mono text-base text-slate-500">
@@ -184,7 +184,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         <div
           role="button"
           tabIndex={0}
-          className="flex min-h-0 cursor-pointer flex-col overflow-hidden rounded-3xl border border-white/80 bg-white/94 text-left shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
+          className="flex min-h-44 flex-1 cursor-pointer flex-col overflow-hidden rounded-3xl border border-white/80 bg-white/94 text-left shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
           onClick={() =>
             setFlipWordId((id) => (id === current.id ? null : current.id))
           }
@@ -200,7 +200,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
               <p className="text-[11px] tracking-[0.18em] text-slate-400 uppercase">
                 释义
               </p>
-              <p className="mt-3 text-2xl leading-snug font-medium text-slate-900">
+              <p className="mt-3 text-3xl leading-snug font-medium text-slate-900">
                 {current.meaningZh}
               </p>
               {current.meaningEn ? (

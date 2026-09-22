@@ -35,13 +35,17 @@ export function App() {
       <div className="lg:grid lg:h-full lg:grid-cols-[272px_minmax(0,1fr)]">
         {engine.status === "ready" ? <DesktopRail engine={engine} /> : null}
         <main className="mx-auto flex w-full max-w-2xl flex-col px-4 py-6 sm:px-6 sm:py-10 lg:mx-0 lg:h-full lg:min-h-0 lg:max-w-none lg:px-8 lg:py-5 xl:px-10">
-          <div className="flex flex-col gap-4 lg:h-full lg:min-h-0 lg:gap-3">
+          <div
+            className={
+              splitReview
+                ? "flex flex-col gap-4 lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1.7fr)_minmax(22rem,0.82fr)] lg:gap-4"
+                : "flex flex-col gap-4 lg:h-full lg:min-h-0 lg:gap-3"
+            }
+          >
             {engine.view !== "review" ? (
               <div
                 className={
-                  splitReview
-                    ? "max-h-[46%] shrink-0 overflow-y-auto"
-                    : undefined
+                  splitReview ? "flex min-h-0 flex-col lg:h-full" : undefined
                 }
               >
                 {engine.status === "ready" && engine.view === "home" ? (
@@ -63,7 +67,7 @@ export function App() {
               <ReviewSession engine={engine} />
             ) : null}
             {splitReview ? (
-              <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/30 p-4">
+              <section className="flex min-h-[24rem] flex-col overflow-hidden rounded-3xl border border-white/70 bg-white/30 p-4 lg:h-full lg:min-h-0">
                 <ReviewSession
                   engine={engine}
                   embedded

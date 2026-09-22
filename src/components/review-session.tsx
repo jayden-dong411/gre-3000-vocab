@@ -157,15 +157,26 @@ export function ReviewSession({
 
       <div
         className={cn(
-          embedded && "grid min-h-0 flex-1 content-center gap-3",
-          "lg:grid lg:grid-cols-[minmax(14rem,0.72fr)_minmax(0,1.28fr)] lg:items-center lg:gap-4"
+          embedded
+            ? "flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto"
+            : "lg:grid lg:grid-cols-[minmax(14rem,0.72fr)_minmax(0,1.28fr)] lg:items-center lg:gap-4"
         )}
       >
-        <GlassPanel className="flex flex-col items-center justify-center px-5 py-8 text-center sm:px-6">
+        <GlassPanel
+          className={cn(
+            "flex flex-col items-center justify-center px-5 py-8 text-center sm:px-6",
+            embedded && "py-6"
+          )}
+        >
           <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
             选择正确释义
           </p>
-          <h2 className="mt-3 font-serif text-4xl tracking-tight text-slate-900 sm:text-5xl">
+          <h2
+            className={cn(
+              "mt-3 font-serif text-4xl tracking-tight text-slate-900 sm:text-5xl",
+              embedded && "text-3xl sm:text-4xl"
+            )}
+          >
             {current.word}
           </h2>
           <div className="mt-3 flex items-center justify-center gap-2">
@@ -176,7 +187,12 @@ export function ReviewSession({
           </div>
         </GlassPanel>
 
-        <div className="mt-4 grid gap-2.5 lg:mt-0 lg:grid-cols-2">
+        <div
+          className={cn(
+            "mt-4 grid gap-2.5",
+            !embedded && "lg:mt-0 lg:grid-cols-2"
+          )}
+        >
           {choices.map((choice, i) => {
             const selected = picked === choice.id
             const show = phase === "feedback"
