@@ -48,13 +48,13 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
 
   if (!current) {
     return (
-      <div>
+      <div className="lg:flex lg:h-[calc(100svh-2.5rem)] lg:min-h-0 lg:flex-col">
         <SessionHeader
           title="今日新词"
           progress={{ current: todayDone, total: todayTotal }}
           onBack={() => setView("home")}
         />
-        <GlassPanel className="px-6 py-12 text-center">
+        <GlassPanel className="px-6 py-12 text-center lg:flex lg:flex-1 lg:flex-col lg:items-center lg:justify-center">
           <p className="font-serif text-2xl text-slate-900">今日新词已完成</p>
           <p className="mt-2 text-sm text-slate-500">
             不认识的词可以马上复习；标成模糊的词大约 30 分钟后再出现。
@@ -80,7 +80,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
   }
 
   return (
-    <div>
+    <div className="lg:flex lg:h-[calc(100svh-2.5rem)] lg:min-h-0 lg:flex-col">
       <SessionHeader
         title="今日新词"
         subtitle="点卡片或空格翻转 · 1 不认识 · 2 模糊 · 3 认识"
@@ -88,7 +88,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         onBack={() => setView("home")}
       />
 
-      <div className="flip-scene mx-auto h-[min(440px,62dvh)] w-full">
+      <div className="flip-scene mx-auto h-[min(440px,62dvh)] w-full lg:hidden">
         <div
           role="button"
           tabIndex={0}
@@ -161,7 +161,78 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
+      <div className="hidden min-h-0 flex-1 grid-cols-2 gap-4 lg:grid">
+        <div
+          className="flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-white/80 bg-white/94 px-8 text-center shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
+          onClick={() =>
+            setFlipWordId((id) => (id === current.id ? null : current.id))
+          }
+        >
+          <p className="text-[11px] tracking-[0.22em] text-slate-400 uppercase">
+            New word
+          </p>
+          <h2 className="mt-4 max-w-full font-serif text-5xl tracking-tight text-slate-900 xl:text-6xl">
+            {current.word}
+          </h2>
+          <p className="mt-3 font-mono text-base text-slate-500">
+            {current.phonetic || "暂无音标"}
+          </p>
+          <div className="mt-5">
+            <SpeakButton text={current.word} />
+          </div>
+        </div>
+        <div
+          role="button"
+          tabIndex={0}
+          className="flex min-h-0 cursor-pointer flex-col overflow-hidden rounded-3xl border border-white/80 bg-white/94 text-left shadow-[0_10px_28px_rgb(15_23_42/0.06)]"
+          onClick={() =>
+            setFlipWordId((id) => (id === current.id ? null : current.id))
+          }
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setFlipWordId((id) => (id === current.id ? null : current.id))
+            }
+          }}
+          aria-label={flipped ? "隐藏释义" : "显示释义"}
+        >
+          {flipped ? (
+            <div className="min-h-0 flex-1 overflow-auto px-7 py-6">
+              <p className="text-[11px] tracking-[0.18em] text-slate-400 uppercase">
+                释义
+              </p>
+              <p className="mt-3 text-2xl leading-snug font-medium text-slate-900">
+                {current.meaningZh}
+              </p>
+              {current.meaningEn ? (
+                <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                  {current.meaningEn}
+                </p>
+              ) : null}
+              {current.exampleEn ? (
+                <figure className="mt-5 rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-3">
+                  <blockquote className="text-sm leading-relaxed text-slate-700">
+                    {current.exampleEn}
+                  </blockquote>
+                  {current.exampleZh ? (
+                    <figcaption className="mt-2 text-xs leading-relaxed text-slate-500">
+                      {current.exampleZh}
+                    </figcaption>
+                  ) : null}
+                </figure>
+              ) : null}
+            </div>
+          ) : (
+            <div className="flex flex-1 flex-col items-center justify-center px-8 text-center">
+              <p className="font-serif text-2xl text-slate-800">释义在这边</p>
+              <p className="mt-2 text-sm text-slate-500">
+                按空格，或点击这块区域
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3 lg:mt-4">
         <RatingButton
           tone="unknown"
           label="不认识"
@@ -186,7 +257,7 @@ export function LearnSession({ engine }: { engine: VocabEngine }) {
       </div>
       <button
         type="button"
-        className="mx-auto mt-4 flex items-center gap-1 text-xs text-slate-400"
+        className="mx-auto mt-4 flex items-center gap-1 text-xs text-slate-400 lg:hidden"
         onClick={() => {
           if (!current) return
           setFlipWordId((id) => (id === current.id ? null : current.id))
@@ -217,7 +288,7 @@ function RatingButton({
       type="button"
       variant="outline"
       className={cn(
-        "h-14 flex-col gap-0.5 rounded-2xl px-1 text-sm shadow-none active:translate-y-px sm:h-16",
+        "h-14 flex-col gap-0.5 rounded-2xl px-1 text-sm shadow-none active:translate-y-px sm:h-16 lg:h-12 lg:flex-row lg:gap-2 lg:text-base",
         tone === "unknown" &&
           "border-rose-200/80 bg-rose-50/70 text-rose-700 hover:bg-rose-50",
         tone === "fuzzy" &&
